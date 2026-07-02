@@ -3,7 +3,7 @@
 # RESOPT
 
 Tailor your résumé to any job description in seconds and watch it update live.
-**Bring your own AI key** (Anthropic, OpenAI, or Google Gemini) — your résumé and
+**Bring your own AI key** (Anthropic, OpenAI, Google Gemini, Groq, or Perplexity) — your résumé and
 key **never leave your computer**, and nothing is stored.
 
 ## Download
