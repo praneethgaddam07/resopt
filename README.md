@@ -47,3 +47,8 @@ No servers, no sign-up, no storage. RESOPT runs a local process on your own comp
 
 ---
 _Pay-as-you-go AI keys cost a few cents per résumé. The app is unsigned; the one-time commands above only remove the "downloaded from the internet" flag from this app._
+
+## Source code
+
+RESOPT is fully open source (MIT): the engine, ATS rules, validators, and this desktop app live at
+**<https://github.com/praneethgaddam07/resume-optimizer>** — audit the "nothing stored" claim yourself, star it, or contribute.
