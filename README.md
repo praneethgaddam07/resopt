@@ -3,30 +3,31 @@
 <h1 align="center">RESOPT</h1>
 <p align="center"><i>The résumé, rewritten for the job you actually want — truthfully.</i></p>
 
+## Install
+
+**macOS (Apple Silicon)** — paste into Terminal to download, install, and launch:
+
+```bash
+curl -L -o /tmp/RESOPT.zip https://github.com/praneethgaddam07/resopt/releases/latest/download/RESOPT-macOS.zip && unzip -o /tmp/RESOPT.zip -d /Applications && xattr -dr com.apple.quarantine /Applications/RESOPT.app && open /Applications/RESOPT.app
+```
+
+**Windows** — [download **RESOPT.exe**](../../releases/latest/download/RESOPT.exe) and run it.
+
+Prefer clicking? Grab the [latest release](../../releases/latest) directly.
+
+## What it does
+
 RESOPT tailors your **real** résumé (and a cover letter, if you want one) to a specific
 job description so it passes **ATS** screening — and it **never invents experience,
 tools, employers, or metrics**. You get an honest fit check, a rewritten résumé with a
-live ATS match score, and a clean single-column `.docx`.
+live ATS match score, and a clean single-column `.docx` or `.pdf`.
 
 - 🔒 **Nothing stored, ever.** Bring your own AI key — it lives in memory for the
   session and is never saved or sent anywhere else.
 - ✅ **Truth-guarded.** Invented metrics and AI-tell words are stripped before the
   document is built; genuinely missing skills are flagged to you — never faked.
-- 🎯 **10 ATS portals** (Workday, Taleo, ADP, Greenhouse, Lever, iCIMS, Paycor,
-  SAP SuccessFactors, SmartRecruiters, BambooHR) with per-portal formatting rules.
-
-## Download
-
-| Platform | Download |
-|----------|----------|
-| macOS (Apple Silicon) | [**RESOPT-macOS.zip**](../../releases/latest/download/RESOPT-macOS.zip) |
-| Windows | [**RESOPT.exe**](../../releases/latest/download/RESOPT.exe) |
-
-**macOS one-liner** (installs to Applications and clears the unsigned-app warning):
-
-```bash
-curl -L -o /tmp/RESOPT.zip https://github.com/praneethgaddam07/resopt/releases/latest/download/RESOPT-macOS.zip && unzip -o /tmp/RESOPT.zip -d /Applications && open /Applications/RESOPT.app
-```
+- 🎯 **11 ATS portals** (Workday, Taleo, ADP, Greenhouse, Lever, iCIMS, Paycor,
+  Ashby, SAP SuccessFactors, SmartRecruiters, BambooHR) with per-portal formatting rules.
 
 ## Your AI key
 
