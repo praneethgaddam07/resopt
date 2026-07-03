@@ -13,7 +13,9 @@ curl -L -o /tmp/RESOPT.zip https://github.com/praneethgaddam07/resopt/releases/l
 
 **Windows** — [download **RESOPT.exe**](../../releases/latest/download/RESOPT.exe) and run it.
 
-Prefer clicking? Grab the [latest release](../../releases/latest) directly.
+Prefer clicking? Grab the [latest release](../../releases/latest) directly. If macOS
+blocks it as from an *unidentified developer*, right-click **RESOPT** in Applications →
+**Open** → **Open** (once). The Terminal command above already handles this for you.
 
 ## What it does
 
