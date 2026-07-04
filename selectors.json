@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "note": "Bundled default. The side panel fetches an override from the public resopt repo at runtime and falls back to this on any failure. Selectors are best-effort and expected to drift; fix them in the remote copy (no store re-review).",
+  "ats": {
+    "greenhouse": {
+      "title": ".app-title, .job__title h1, h1.section-header, h1",
+      "company": ".company-name, .job__company",
+      "jd": "#content, .job__description, .body--text"
+    },
+    "lever": {
+      "title": ".posting-headline h2, h2",
+      "company": ".main-header-logo img[alt], .posting-headline + div",
+      "jd": "[data-qa='job-description'], .section-wrapper.page-full-width, .posting-content"
+    },
+    "workday": {
+      "title": "h2[data-automation-id='jobPostingHeader'], h1",
+      "company": "[data-automation-id='jobPostingCompany']",
+      "jd": "[data-automation-id='jobPostingDescription']"
+    },
+    "icims": {
+      "title": ".iCIMS_Header, h1.title, .title, h1",
+      "company": ".iCIMS_JobHeaderData",
+      "jd": ".iCIMS_JobContent, .iCIMS_InfoMsg_Job, #jobDescription"
+    },
+    "smartrecruiters": {
+      "title": ".job-title, h1",
+      "company": "[itemprop='hiringOrganization'], .company-name",
+      "jd": "[itemprop='description'], #st-jobDescription, .job-sections"
+    },
+    "ashby": {
+      "title": ".ashby-job-posting-heading, h1",
+      "company": ".ashby-job-posting-organization",
+      "jd": ".ashby-job-posting-content, [class*='_description']"
+    },
+    "bamboohr": {
+      "title": ".ATS-title, h1",
+      "company": ".ATS-company-name",
+      "jd": ".ATS-description, #jobDescription"
+    },
+    "linkedin": {
+      "title": ".job-details-jobs-unified-top-card__job-title, .top-card-layout__title, h1",
+      "company": ".job-details-jobs-unified-top-card__company-name, .topcard__org-name-link",
+      "jd": "#job-details, .jobs-description__content, .show-more-less-html__markup"
+    },
+    "indeed": {
+      "title": "[data-testid='jobsearch-JobInfoHeader-title'], h1.jobsearch-JobInfoHeader-title, h1",
+      "company": "[data-testid='inlineHeader-companyName'], .jobsearch-CompanyInfoContainer a",
+      "jd": "#jobDescriptionText, .jobsearch-JobComponent-description"
+    }
+  },
+  "fallback": { "jdStrategy": "largest-text-block", "minChars": 300, "maxChars": 20000 }
+}
