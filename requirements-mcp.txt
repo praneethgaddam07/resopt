@@ -1,0 +1,9 @@
+# Dependencies for the MCP connector ONLY (mcp_server.py).
+# Deliberately minimal and FastAPI-free: the connector uses mcp (which brings starlette,
+# uvicorn, and pydantic) + python-docx. Keeping FastAPI out avoids the starlette version
+# clash that breaks a combined install. The BYO-key website keeps its own requirements.txt.
+mcp[cli]==1.28.1
+python-docx==1.1.2
+# Optional: only used when REDIS_URL is set, so hosted download links survive
+# restarts / work across instances. No REDIS_URL -> in-memory (unchanged).
+redis==5.2.1

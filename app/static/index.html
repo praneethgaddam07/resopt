@@ -1,0 +1,1150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RESOPT — the résumé, rewritten for the job you want</title>
+<link rel="icon" type="image/png" href="/static/icon.png" />
+<style>
+  /* ===== Paper Studio — warm editorial print. Ink on paper, one vermilion accent. ===== */
+  :root{--bg:#F6F1E7;--panel:#FFFDF8;--panel2:#FBF8F1;--line:#E3DACA;--rule:#D8CFBD;--text:#16181D;
+    --muted:#8A8378;--accent:#E4572E;--accent2:#2E7D4F;--warn:#B3541E;--bad:#A02818;--radius:3px;
+    --tint-accent:#FBEFE8;--tint-good:#EDF3EC;--tint-info:#EAF0F6;--info:#2B5C8A;--tint-warn:#F7EDDF;--tint-bad:#F8E9E5;
+    --serif:Georgia,'Iowan Old Style','Times New Roman',serif;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  a{color:var(--accent);}
+  header{padding:26px 24px 8px;max-width:1240px;margin:0 auto;}
+  h1{margin:0 0 4px;font-size:24px;letter-spacing:-.4px;}
+  .sub{color:var(--muted);font-size:14px;}
+  .badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:6px;}
+  main{max-width:1240px;margin:0 auto;padding:8px 24px 70px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr;}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;}
+  .step{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.6px;}
+  .card h2{margin:2px 0 12px;font-size:16px;}
+  .h-sm{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 10px;}
+  label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px;}
+  input[type=text],input[type=password],input[type=number],textarea,select{
+    width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px 11px;font:inherit;}
+  textarea{min-height:120px;resize:vertical;}
+  .row{display:flex;gap:10px;}.row>div{flex:1;}
+  button{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:600;cursor:pointer;}
+  button:disabled{opacity:.55;cursor:not-allowed;}
+  .full{width:100%;margin-top:16px;}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px;}
+  .keyrow{display:flex;align-items:center;gap:8px;}
+  .prov{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);white-space:nowrap;}
+  .prov.ok{color:var(--accent2);border-color:#CBDECD;background:var(--tint-good);}
+  .prov.bad{color:var(--warn);border-color:#E8D3B8;background:var(--tint-warn);}
+  .privacy{margin-top:10px;font-size:12px;color:var(--accent2);background:var(--tint-good);border:1px solid #CBDECD;border-radius:2px;padding:8px 11px;font-style:italic;}
+  /* drop zone */
+  .drop{border:1.5px dashed #C9BFA9;border-radius:2px;padding:20px;text-align:center;background:var(--panel2);cursor:pointer;transition:.15s;}
+  .drop.hot{border-color:var(--accent);background:var(--tint-accent);}
+  .drop .big{font-size:14px;}.drop .nm{font-size:12px;color:var(--accent2);margin-top:6px;}
+  /* progress */
+  .progress{height:8px;background:var(--panel2);border-radius:999px;overflow:hidden;margin-top:10px;}
+  .progress>i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s;}
+  .kvs{font-size:13px;color:var(--muted);}.kvs b{color:var(--text);font-weight:600;}
+  .muted{color:var(--muted);}.err{color:var(--bad);}
+  /* report */
+  #results{display:none;margin-top:20px;}
+  .scorewrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+  .gauge{--val:0;width:108px;height:108px;border-radius:50%;background:conic-gradient(var(--accent2) calc(var(--val)*1%),var(--line) 0);display:grid;place-items:center;position:relative;}
+  .gauge::after{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--panel);}
+  .gauge b{position:relative;font-size:26px;}.gauge small{position:relative;display:block;text-align:center;color:var(--muted);font-size:11px;}
+  .pill{display:inline-block;font-size:12px;padding:3px 9px;border-radius:2px;margin:3px 4px 0 0;border:1px solid var(--line);}
+  .pill.ok{color:var(--accent2);border-color:#CBDECD;background:var(--tint-good);}
+  .pill.near{color:var(--info);border-color:#C9D8E6;background:var(--tint-info);}
+  .pill.miss{color:var(--warn);border-color:#E8D3B8;background:var(--tint-warn);}
+  .lab{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;}
+  .sug{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;margin:6px 0;border:1px solid var(--line);border-left-width:3px;border-radius:2px;background:var(--panel2);font-size:13px;}
+  .sug .tag{text-transform:uppercase;font-size:10px;letter-spacing:.5px;padding:2px 6px;border-radius:2px;flex:none;margin-top:1px;}
+  .sug.reframe{border-left-color:var(--accent2);}.sug.reframe .tag{background:var(--tint-good);color:var(--accent2);}
+  .sug.rephrase{border-left-color:var(--info);}.sug.rephrase .tag{background:var(--tint-info);color:var(--info);}
+  .sug.add{border-left-color:var(--warn);}.sug.add .tag{background:var(--tint-warn);color:var(--warn);}
+  .check{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line);}
+  .check .mark{font-weight:700;}.check .mark.ok{color:var(--accent2);}.check .mark.no{color:var(--bad);}
+  .check .detail{color:var(--muted);font-size:12px;}
+  /* editor + live preview */
+  .workbench{display:grid;grid-template-columns:1fr 1.05fr;gap:18px;margin-top:16px;}
+  @media (max-width:1000px){.workbench{grid-template-columns:1fr;}}
+  .sec{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel2);overflow:hidden;}
+  .sec>.hd{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#F3EDE0;border-bottom:1px solid var(--line);}
+  .sec>.hd .nm{font-weight:600;text-transform:capitalize;flex:1;}
+  .sec>.bd{padding:10px 12px;}
+  .entry{border:1px dashed var(--line);border-radius:8px;padding:8px;margin:8px 0;}
+  .ebar{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .elab{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;flex:1;}
+  .drag{cursor:grab;color:var(--muted);font-size:15px;user-select:none;padding:0 4px;}
+  .drag:active{cursor:grabbing;}
+  .del{background:transparent;border:1px solid #E0BDB3;color:var(--bad);border-radius:2px;width:26px;height:24px;padding:0;font-size:12px;cursor:pointer;box-shadow:none;}
+  .ed{margin:5px 0;}.sec textarea{min-height:58px;}
+  .dragging{opacity:.4;}.dropover{outline:2px dashed var(--accent);outline-offset:-2px;}
+  .pvwrap{position:sticky;top:14px;}
+  .pvbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .paper{background:#fff;color:#1b1b1b;border:1px solid #EBE4D6;border-radius:2px;padding:30px 34px;
+    font:13px/1.5 Calibri,Arial,sans-serif;max-height:78vh;overflow:auto;
+    box-shadow:0 12px 26px rgba(22,24,29,.12),0 2px 6px rgba(22,24,29,.07);
+    transform:rotate(-.35deg);transition:transform .25s ease,box-shadow .25s ease;}
+  .paper:hover{transform:rotate(0deg) translateY(-3px);
+    box-shadow:0 20px 40px rgba(22,24,29,.16),0 4px 10px rgba(22,24,29,.08);}
+  .paper h1{font-size:20px;margin:0;color:#111;}
+  .paper .ctline{color:#444;font-size:12px;margin:2px 0 4px;}
+  .paper .ctline a{color:#0563c1;text-decoration:underline;}
+  .paper .title{font-weight:700;margin:2px 0 2px;}
+  .paper h3{font-size:12px;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid #cfcfcf;margin:13px 0 5px;padding-bottom:2px;color:#222;}
+  .paper .role{display:flex;justify-content:space-between;gap:10px;font-weight:700;}
+  .paper .role .dt{font-weight:400;color:#555;white-space:nowrap;}
+  .paper .bridge{font-style:italic;color:#444;font-size:12px;margin:1px 0 2px;}
+  .paper ul{margin:3px 0 8px;padding-left:18px;}.paper li{margin:2px 0;}
+  .paper .sk{margin:2px 0;}
+  details summary{cursor:pointer;color:var(--accent);margin-top:8px;}
+  /* tabs */
+  .tabs{display:flex;gap:22px;max-width:1240px;margin:10px auto 0;padding:0 24px;border-bottom:1px solid var(--rule);}
+  .tab{background:transparent;color:var(--muted);border:0;border-radius:0;box-shadow:none;
+    padding:9px 2px 12px;font-weight:700;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;}
+  .tab.active{background:transparent;color:var(--text);box-shadow:inset 0 -2px 0 var(--accent);}
+  .tabpanel[hidden]{display:none;}
+  /* fit check */
+  .verdict{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .vbadge{font-size:15px;font-weight:700;padding:6px 14px;border-radius:2px;border:1px solid var(--line);font-family:var(--serif);}
+  .v-strong_fit{color:var(--accent2);border-color:#CBDECD;background:var(--tint-good);}
+  .v-qualified{color:var(--info);border-color:#C9D8E6;background:var(--tint-info);}
+  .v-stretch{color:var(--warn);border-color:#E8D3B8;background:var(--tint-warn);}
+  .v-not_a_match{color:var(--bad);border-color:#E8C5BB;background:var(--tint-bad);}
+  .reqrow{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .reqrow .st{font-weight:700;flex:none;width:60px;text-transform:uppercase;font-size:10px;letter-spacing:.4px;margin-top:2px;}
+  .st-met{color:var(--accent2);}.st-partial{color:var(--warn);}.st-missing{color:var(--bad);}
+  .gli{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:5px 0;}
+  .gli .sev{font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding:2px 6px;border-radius:5px;flex:none;margin-top:1px;}
+  .sev-blocker{background:var(--tint-bad);color:var(--bad);}.sev-major{background:var(--tint-warn);color:var(--warn);}.sev-minor{background:var(--tint-info);color:var(--info);}
+  /* cover letter */
+  .letter{background:#fff;color:#1b1b1b;border:1px solid #EBE4D6;border-radius:2px;padding:28px 32px;font:13px/1.6 Calibri,Arial,sans-serif;white-space:pre-wrap;max-height:70vh;overflow:auto;
+    box-shadow:0 12px 26px rgba(22,24,29,.12),0 2px 6px rgba(22,24,29,.07);}
+  /* style panel */
+  .stylegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 12px;margin-top:10px;}
+  @media (max-width:900px){.stylegrid{grid-template-columns:repeat(2,1fr);}}
+  .stylegrid label{margin:0 0 3px;}
+  .stylegrid input[type=number],.stylegrid select{padding:7px 9px;}
+  /* ===== Paper Studio layer — typography, buttons, chrome ===== */
+  body{font-family:var(--font);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  h1{font-family:var(--serif);font-weight:700;letter-spacing:.2px;}
+  .card h2{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:.2px;}
+  .h-sm{font-size:10px;letter-spacing:2px;}
+  .step{font-size:10px;font-weight:700;letter-spacing:2px;}
+  .sub{font-family:var(--serif);font-style:italic;}
+  .badge{font-size:9px;letter-spacing:2px;text-transform:uppercase;border-radius:2px;padding:4px 10px;border-color:var(--rule);}
+  /* buttons: ink on paper; the primary CTA carries a vermilion offset shadow */
+  button{background:var(--text);color:var(--bg);border-radius:2px;letter-spacing:.3px;
+    transition:transform .12s,box-shadow .12s,filter .15s,border-color .15s;}
+  button:hover:not(:disabled){filter:brightness(1.15);}
+  .full{box-shadow:3px 3px 0 var(--accent);}
+  .full:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--accent);filter:none;}
+  .full:active:not(:disabled){transform:translate(1px,1px);box-shadow:2px 2px 0 var(--accent);}
+  input[type=text],input[type=password],input[type=number],textarea,select{border-radius:2px;transition:border-color .15s,box-shadow .15s;}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(228,87,46,.15);}
+  /* score gauge: vermilion ring, serif numeral */
+  .gauge{background:conic-gradient(var(--accent) calc(var(--val)*1%),#EDE5D4 0);}
+  .gauge b{font-family:var(--serif);font-size:30px;}
+  .progress{height:5px;border-radius:0;background:#EDE5D4;}
+  .progress>i{border-radius:0;}
+  .tab{transition:color .15s;}
+  .tab:hover{color:var(--text);background:transparent;filter:none;}
+  .tab.locked{opacity:.6;}
+  /* brand / header */
+  .brand{display:flex;align-items:baseline;gap:11px;}
+  .wordmark{font-family:var(--serif);font-weight:700;font-size:30px;letter-spacing:.5px;color:var(--text);}
+  .wordmark .dot{color:var(--accent);}
+  .headrow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+  .gear{background:transparent;border:1px solid var(--rule);color:var(--muted);border-radius:2px;padding:9px 12px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;box-shadow:none;}
+  .gear:hover{color:var(--text);border-color:var(--accent);filter:none;}
+  /* welcome-back strip: an editorial sidebar note */
+  .wbbar{display:none;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:2px;padding:10px 14px;margin:12px auto 0;max-width:1240px;}
+  .wbbar.show{display:flex;}
+  .wbbar .av{width:34px;height:34px;border-radius:50%;background:var(--tint-accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none;font-family:var(--serif);}
+  .wbbar .t{flex:1;min-width:0;}
+  .wbbar .t b{font-size:14px;font-family:var(--serif);}
+  .wbbar .t div{font-size:12px;color:var(--muted);}
+  .linklike{background:none;border:0;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;padding:0;box-shadow:none;}
+  .linklike:hover{color:var(--accent);filter:none;background:none;}
+  /* lock states */
+  .lockbox{border:1px solid var(--line);border-radius:2px;padding:24px;text-align:center;background:var(--panel2);}
+  .lockbox .ic{width:46px;height:46px;border-radius:50%;background:var(--tint-accent);display:grid;place-items:center;font-size:22px;margin:0 auto 10px;}
+  .lockbox .lh{font-size:15px;font-weight:700;margin-bottom:3px;font-family:var(--serif);}
+  .lockbox .ls{font-size:12px;color:var(--muted);margin-bottom:14px;}
+  /* résumé picker cards */
+  .rpick{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+  .rcard{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:2px;padding:10px 12px;background:var(--panel2);cursor:pointer;transition:border-color .15s,background .15s;}
+  .rcard:hover{border-color:#C9BFA9;}
+  .rcard.sel{border-color:var(--accent);background:var(--tint-accent);}
+  .rcard .rdot{width:16px;height:16px;border-radius:50%;border:2px solid #C9BFA9;flex:none;}
+  .rcard.sel .rdot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 2px var(--tint-accent);}
+  .rcard .rmeta{flex:1;min-width:0;}
+  .rcard .rname{font-size:13px;font-weight:600;}
+  .rcard .rsub{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rcard.add{border-style:dashed;color:var(--accent);justify-content:center;font-size:13px;background:transparent;}
+  .rcard.gen{border-color:#C9D8E6;background:var(--tint-info);}
+  .rcard.gen.sel{border-color:var(--accent);background:var(--tint-accent);}
+  /* onboarding overlay: warm scrim, paper card */
+  .ob-overlay{position:fixed;inset:0;background:rgba(43,38,31,.55);backdrop-filter:blur(3px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px;overflow:auto;}
+  .ob-overlay.show{display:flex;}
+  .ob-card{width:100%;max-width:560px;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:26px 26px 22px;margin:auto;box-shadow:0 24px 60px rgba(22,24,29,.25);}
+  .ob-ic{width:46px;height:46px;border-radius:50%;background:var(--tint-accent);display:grid;place-items:center;font-size:23px;margin-bottom:13px;}
+  .ob-ic.gn{background:var(--tint-good);}
+  .ob-h{font-family:var(--serif);font-size:22px;font-weight:700;letter-spacing:.2px;margin:0 0 5px;}
+  .ob-sub{font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.5;}
+  .ob-body .row{margin-top:8px;}
+  .ob-nav{display:flex;gap:10px;margin-top:20px;align-items:center;}
+  .ob-nav .grow{flex:1;}
+  .ob-dots{display:flex;gap:6px;justify-content:center;margin-top:16px;}
+  .ob-dots i{width:7px;height:7px;border-radius:50%;background:var(--rule);display:block;transition:.2s;}
+  .ob-dots i.on{background:var(--accent);width:20px;border-radius:999px;}
+  .ob-recap{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text);padding:6px 0;}
+  .ob-recap .ck{color:var(--accent2);font-weight:700;}
+  .btn-ghost{background:transparent;border:1px solid var(--rule);color:var(--muted);box-shadow:none;}
+  .btn-ghost:hover{color:var(--text);filter:none;background:transparent;}
+</style>
+</head>
+<body>
+<header>
+  <div class="headrow">
+    <div>
+      <div class="brand"><span class="wordmark">RESOPT<span class="dot">.</span></span><span class="badge">private — your key, your machine</span></div>
+      <div class="sub" style="margin-top:6px;">The résumé, <span style="color:var(--accent)">rewritten</span> for the job you actually want. Nothing stored, ever.</div>
+    </div>
+  </div>
+</header>
+
+<div class="wbbar" id="wbbar">
+  <div class="av" id="wbAv">·</div>
+  <div class="t"><b id="wbName">Welcome back</b><div id="wbSub">Profile restored · add your key in Settings to continue.</div></div>
+  <button type="button" class="linklike" id="wbRedo">Redo setup</button>
+</div>
+
+<div class="ob-overlay" id="onboarding">
+  <div class="ob-card">
+    <div id="obBody"></div>
+    <div class="ob-dots" id="obDots"></div>
+  </div>
+</div>
+
+<main>
+  <div class="tabs">
+    <button type="button" class="tab active" data-tab="fit">Nº1 · Check fit</button>
+    <button type="button" class="tab" data-tab="optimize">Nº2 · Optimize</button>
+    <button type="button" class="tab locked" data-tab="cover" id="tabCover">🔒 Nº3 · Cover letter</button>
+    <button type="button" class="tab" data-tab="profile" style="margin-left:auto">Profile</button>
+  </div>
+  <div class="grid2">
+    <!-- LEFT: inputs -->
+    <section class="card">
+      <form id="form">
+        <input type="hidden" name="api_key" id="api_key" />
+
+        <div class="step">Your AI key</div>
+        <div class="keyrow" style="margin-top:8px;">
+          <input type="password" id="set_key" placeholder="Paste your key — sk-ant… / sk… / AIza… / AQ… / gsk_… / pplx-…" autocomplete="off" />
+          <span class="prov" id="provChip">detecting…</span>
+        </div>
+        <div class="hint" style="margin-top:6px;">Get a key:
+          <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic</a> ·
+          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">OpenAI</a> ·
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Gemini</a> ·
+          <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq</a> ·
+          <a href="https://www.perplexity.ai/settings/api" target="_blank" rel="noopener">Perplexity</a>
+          <span class="muted">— Gemini &amp; Groq have free tiers; Perplexity Pro includes monthly credits.</span>
+        </div>
+        <div class="privacy">🔒 Session-only — kept while the app is open, cleared when you close it. Never saved to disk, never sent to any server.</div>
+
+        <div class="step" style="margin-top:18px;">Step 1 · Your résumé</div>
+        <div id="resumePicker" class="rpick" style="display:none;"></div>
+        <div class="hint" id="pickerHint" style="display:none;margin:6px 0 0;">Pick one of your saved résumés, or add a new one below.</div>
+        <div class="drop" id="drop" style="margin-top:8px;">
+          <input type="file" id="resume_file" name="resume_file" accept=".pdf,.docx,.txt" hidden />
+          <div class="big">⬆ Drag &amp; drop your résumé here, or <span style="color:var(--accent)">browse</span></div>
+          <div class="hint">.pdf, .docx, or .txt</div>
+          <div class="nm" id="dzname"></div>
+        </div>
+        <textarea name="resume" id="resume" placeholder="…or paste résumé text" style="margin-top:10px;min-height:90px;"></textarea>
+        <select id="useSaved" style="display:none;"><option value="">—</option></select>
+
+        <div class="step" style="margin-top:18px;">Step 2 · The job</div>
+        <textarea name="jd" id="jd" placeholder="Paste the full job description" required></textarea>
+        <div class="row" style="margin-top:8px;">
+          <div><label>Target ATS portal</label><select name="ats" id="ats"></select></div>
+          <div><label>Target job title (optional)</label><input type="text" name="target_title" placeholder="e.g. Data Analyst" /></div>
+        </div>
+
+        <div class="hint" style="margin-top:14px">Same résumé + job above feed all three tabs — fit check, optimize, and cover letter.</div>
+      </form>
+    </section>
+
+    <!-- RIGHT: tab-specific panel -->
+    <section class="card">
+      <!-- FIT CHECK -->
+      <div class="tabpanel" data-tab="fit">
+        <div class="step">Fit check · should you apply?</div>
+        <p class="hint" style="margin-top:8px">A quick, honest read on whether you're qualified for this role — based only on your résumé and the JD. It won't change your résumé; it just helps you decide. You can optimize anyway, or jump straight to optimizing.</p>
+        <button type="button" id="goFit" class="full">Check my fit →</button>
+        <div id="fitStatus" class="hint" style="display:none;margin-top:10px">Assessing your fit…</div>
+        <div class="err" id="fitErr" style="margin-top:8px"></div>
+      </div>
+      <!-- OPTIMIZE -->
+      <div class="tabpanel" id="panelOpt" data-tab="optimize" hidden>
+      <div class="step">Step 4 · Output</div>
+      <div class="row" style="margin-top:8px;">
+        <div><label>Your last name</label><input type="text" id="lastname" name="lastname" value="Resume" /></div>
+        <div><label>Company name</label><input type="text" id="company" name="company" value="Company" /></div>
+      </div>
+      <div class="row">
+        <div><label>Max total bullets</label><input type="number" name="max_bullets" id="max_bullets" value="20" min="6" max="24" /></div>
+        <div><label>File name</label><input type="text" value="Lastname_Company.docx" disabled style="opacity:.65;" /></div>
+      </div>
+      <div class="hint">Bullets auto-distributed (recency + keyword coverage), capped at the total.</div>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer;margin-top:6px;">
+        <input type="checkbox" name="economy" id="economy" style="width:auto;margin:0;" />
+        Economy Mode — lowest cost (runs every step on the lightweight model)
+      </label>
+      <div class="hint">Default (Precision) uses the stronger model for bullets, skills &amp; summary; Economy uses the lightweight model throughout.</div>
+      <details>
+        <summary>Override contact details (optional)</summary>
+        <div class="row"><div><label>Name</label><input type="text" name="name" /></div><div><label>Phone</label><input type="text" name="phone" /></div></div>
+        <div class="row"><div><label>Email</label><input type="text" name="email" /></div><div><label>LinkedIn</label><input type="text" name="linkedin" /></div></div>
+        <label>Location</label><input type="text" name="location" />
+      </details>
+      <details id="toolswrap" style="margin:12px 0;">
+        <summary>Confirm your tools — get more honest keyword matches</summary>
+        <div class="hint" style="margin-top:6px">Scans the job's tools against your résumé. Tick any you've <b>genuinely used</b> — they get woven into your bullets (not just skills). Only add tools you can defend in an interview.</div>
+        <button type="button" id="scanTools" class="full" style="margin-top:8px">Scan tools for this job →</button>
+        <div id="toolsStatus" class="hint" style="display:none;margin-top:8px">Scanning your tools…</div>
+        <div id="toolsResult" style="margin-top:10px"></div>
+      </details>
+      <button type="button" id="go" class="full">Optimize my résumé →</button>
+      <div id="status" style="margin-top:16px;display:none;">
+        <div class="kvs"><b id="statusLabel">Queued</b> <span id="statusPct" class="muted"></span></div>
+        <div class="progress"><i id="bar"></i></div>
+        <div class="err" id="statusErr"></div>
+      </div>
+      </div><!-- /optimize panel -->
+      <!-- COVER LETTER -->
+      <div class="tabpanel" data-tab="cover" hidden>
+        <div class="step">Cover letter</div>
+        <div id="coverLock" class="lockbox" style="margin-top:10px;">
+          <div class="ic">🔒</div>
+          <div class="lh">Optimize a résumé first</div>
+          <div class="ls">Your cover letter is written from your <b>customized</b> résumé — so it matches the role exactly.</div>
+          <button type="button" class="btn-ghost" id="coverGoOpt">Go to Optimize →</button>
+          <div style="margin-top:12px;"><button type="button" class="linklike" id="coverOverride">Or write from my raw résumé instead</button></div>
+        </div>
+        <div id="coverForm" style="display:none;">
+        <div class="hint" id="coverSource" style="margin-top:8px;color:var(--accent2);">✓ Based on your customized résumé.</div>
+        <div class="row" style="margin-top:8px;">
+          <div><label>Company name</label><input type="text" id="cl_company" placeholder="Acme Inc." /></div>
+          <div><label>Your name</label><input type="text" id="cl_name" placeholder="auto-filled from résumé if blank" /></div>
+        </div>
+        <div class="row">
+          <div><label>Tone</label><select id="cl_tone"><option value="professional">Professional</option><option value="warm">Warm</option><option value="direct">Direct</option><option value="mission-driven">Mission-driven</option></select></div>
+          <div><label>Address to (optional)</label><input type="text" id="cl_hm" placeholder="e.g. Jordan Lee, Hiring Manager" /></div>
+        </div>
+        <div class="hint">Uses your real experience and the JD's priorities. It names the company (your résumé never does).</div>
+        <button type="button" id="goCover" class="full">Generate cover letter →</button>
+        <div id="coverStatus" class="hint" style="display:none;margin-top:10px">Writing your cover letter…</div>
+        <div class="err" id="coverErr" style="margin-top:8px"></div>
+        </div>
+      </div>
+      <!-- PROFILE -->
+      <div class="tabpanel" data-tab="profile" hidden>
+        <div class="step">Your profile</div>
+        <div class="privacy">🔒 Saved only on this device (your browser's local storage). Never sent to any server — your details are added to the résumé only when you optimize. Email is optional.</div>
+        <div class="row" style="margin-top:10px"><div><label>First name</label><input type="text" id="pf_first" /></div><div><label>Last name</label><input type="text" id="pf_last" /></div></div>
+        <div class="row"><div><label>Phone</label><input type="text" id="pf_phone" /></div><div><label>Email (optional)</label><input type="text" id="pf_email" /></div></div>
+        <div class="row"><div><label>Location</label><input type="text" id="pf_location" /></div><div><label>LinkedIn</label><input type="text" id="pf_linkedin" placeholder="linkedin.com/in/you" /></div></div>
+        <div class="row"><div><label>GitHub</label><input type="text" id="pf_github" placeholder="github.com/you" /></div><div><label>Portfolio / website</label><input type="text" id="pf_portfolio" /></div></div>
+        <label style="margin-top:14px">Target roles &amp; preferences</label>
+        <input type="text" id="pf_targets" placeholder="Target titles, comma-separated (e.g. Data Analyst, BI Developer)" />
+        <div class="row" style="margin-top:6px"><div><select id="pf_seniority"><option value="">Seniority (optional)</option><option>Entry</option><option>Mid</option><option>Senior</option><option>Lead / Manager</option></select></div><div><select id="pf_defats"><option value="">Default ATS portal (optional)</option></select></div></div>
+        <label style="margin-top:14px">Work experience</label>
+        <div id="pf_exp"></div>
+        <button type="button" id="pf_addExp" style="background:var(--panel2);border:1px solid var(--line);font-weight:500;">+ Add experience</button>
+        <label style="margin-top:14px">Projects</label>
+        <div id="pf_proj"></div>
+        <button type="button" id="pf_addProj" style="background:var(--panel2);border:1px solid var(--line);font-weight:500;">+ Add project</button>
+        <label style="margin-top:14px">Skills <span class="muted" style="font-weight:400;text-transform:none">(comma-separated — used as-is)</span></label>
+        <textarea id="pf_skills" placeholder="Python, SQL, Tableau, Excel, Power BI, …" style="min-height:58px"></textarea>
+        <label style="margin-top:14px">Education</label>
+        <div id="pf_edu"></div>
+        <button type="button" id="pf_addEdu" style="background:var(--panel2);border:1px solid var(--line);font-weight:500;">+ Add education</button>
+        <label style="margin-top:14px">Certifications</label>
+        <div id="pf_certs"></div>
+        <button type="button" id="pf_addCert" style="background:var(--panel2);border:1px solid var(--line);font-weight:500;">+ Add certification</button>
+        <label style="margin-top:14px">Master résumés <span class="muted" style="font-weight:400;text-transform:none">(up to 3 — one per target role; upload once, pick when you optimize)</span></label>
+        <div id="pf_resumes"></div>
+        <input type="file" id="pf_resumeFile" accept=".pdf,.docx,.txt" hidden />
+        <button type="button" id="pf_addResume" style="background:var(--panel2);border:1px solid var(--line);font-weight:500;">+ Upload a résumé</button>
+        <div class="err" id="pf_resumeErr" style="margin-top:6px"></div>
+        <button type="button" id="pf_save" class="full" style="margin-top:16px">Save profile to this device</button>
+        <span id="pf_saved" class="hint" style="display:none;color:var(--accent2);margin-left:10px">✓ Saved</span>
+        <div class="hint" style="margin-top:8px">Your saved profile auto-fills every optimization — formatting choices in the Style panel are remembered too.</div>
+        <div style="margin-top:14px;">
+          <button type="button" class="btn-ghost" id="set_redo">Redo setup</button>
+        </div>
+        <div class="hint" style="margin-top:10px">Your profile and saved résumés live on this device only. Redo setup walks you through everything again.</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <section class="card">
+      <h2 class="h-sm">Your match report</h2>
+      <div class="scorewrap">
+        <div class="gauge" id="gauge"><div><b id="scoreNum">0</b><small>ATS match</small></div></div>
+        <div style="flex:1;min-width:240px;">
+          <div class="kvs"><b id="titleOut"></b> · <span id="portalOut" class="muted"></span></div>
+          <div id="threshOut" class="kvs" style="margin-top:6px;"></div>
+          <div id="reqOut" class="kvs" style="margin-top:4px;"></div>
+          <div style="margin-top:8px;">
+            <span class="lab">Matched</span><div id="matched"></div>
+            <span class="lab" style="display:inline-block;margin-top:6px;">Rephrase to exact</span><div id="nearmiss"></div>
+            <span class="lab" style="display:inline-block;margin-top:6px;">Missing (add only if true)</span><div id="missing"></div>
+          </div>
+        </div>
+      </div>
+      <details style="margin-top:8px;"><summary>The problem this role solves + how to raise the score</summary>
+        <p id="problemOut" class="kvs" style="margin:8px 0;"></p>
+        <div id="suggestions"></div>
+      </details>
+      <details><summary>Pre-submit checklist</summary><div id="checklist" style="margin-top:6px;"></div></details>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
+      <h2 class="h-sm">Edit &amp; arrange — your résumé updates live</h2>
+      <div class="hint">Drag the ⠿ handle to reorder sections or items. Every change shows instantly in the preview. Download matches the preview exactly.</div>
+      <details id="stylewrap" style="margin:10px 0;">
+        <summary>Formatting &amp; style (ATS-safe)</summary>
+        <div class="stylegrid">
+          <div><label>Font</label><select id="st_font"><option>Calibri</option><option>Carlito</option><option>Arial</option><option>Helvetica</option><option>Georgia</option><option>Times New Roman</option><option>Cambria</option><option>Garamond</option></select></div>
+          <div><label>Header alignment</label><select id="st_align"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+          <div><label>Bullet</label><select id="st_bullet"><option value="•">• Dot</option><option value="–">– Dash</option></select></div>
+          <div><label>Heading color</label><input type="color" id="st_accent" value="#000000" style="height:38px;padding:3px;" /></div>
+          <div><label>Name size</label><input type="number" id="st_name" value="16" min="11" max="28" /></div>
+          <div><label>Heading size</label><input type="number" id="st_heading" value="12" min="9" max="18" /></div>
+          <div><label>Sub-heading size</label><input type="number" id="st_sub" value="11" min="9" max="16" /></div>
+          <div><label>Body size</label><input type="number" id="st_body" value="11" min="8" max="14" /></div>
+          <div><label>Line spacing</label><select id="st_ls"><option value="1.0">Single</option><option value="1.15">1.15</option><option value="1.5">1.5</option></select></div>
+          <div><label>Section gap (pt)</label><input type="number" id="st_secspace" value="4" min="0" max="16" /></div>
+          <div><label>Entry gap (pt)</label><input type="number" id="st_entryspace" value="2" min="0" max="10" /></div>
+          <div><label>Margins</label><select id="st_margin"><option value="narrow">Narrow</option><option value="normal" selected>Normal</option><option value="wide">Wide</option></select></div>
+          <div><label>Education by</label><select id="st_eduorder"><option value="degree">Degree first</option><option value="institution">Institution first</option></select></div>
+          <div><label>Skills layout</label><select id="st_skills"><option value="categorized">Categorized</option><option value="compact">Compact</option><option value="inline">Inline (densest)</option></select></div>
+          <div><label>Date format</label><select id="st_dateformat"><option value="asis">As written</option><option value="mon_year">Mon YYYY</option><option value="num_year">MM/YYYY</option><option value="year">YYYY</option></select></div>
+          <div style="grid-column:1/-1;display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+            <label style="display:flex;gap:6px;align-items:center;font-weight:400;margin:0;"><input type="checkbox" id="st_bold_h" checked style="width:auto;margin:0;" />Bold headings</label>
+            <label style="display:flex;gap:6px;align-items:center;font-weight:400;margin:0;"><input type="checkbox" id="st_bold_s" checked style="width:auto;margin:0;" />Bold sub-headings</label>
+            <label style="display:flex;gap:6px;align-items:center;font-weight:400;margin:0;"><input type="checkbox" id="st_divider" checked style="width:auto;margin:0;" />Divider line</label>
+            <label style="display:flex;gap:6px;align-items:center;font-weight:400;margin:0;"><input type="checkbox" id="st_fit" style="width:auto;margin:0;" />Fit to one page</label>
+          </div>
+        </div>
+        <div class="hint">All options stay single-column and parser-safe. Preview is approximate; the downloaded .docx is exact. “Fit to one page” is best-effort — it shrinks sizes and spacing, not your content.</div>
+      </details>
+      <div class="workbench">
+        <div id="editor"></div>
+        <div class="pvwrap">
+          <div class="pvbar"><span class="lab">Live preview</span>
+            <a id="dlLink"><button type="button">⬇ Download .docx</button></a>
+            <a id="dlPdf"><button type="button" class="btn-ghost">⬇ PDF</button></a></div>
+          <div class="hint" style="margin-top:6px">.docx parses most reliably in ATS portals — upload that one. The PDF is the same layout for humans (email, print, LinkedIn).</div>
+          <div class="paper" id="paper"></div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- FIT RESULT -->
+  <section id="fitResult" hidden>
+    <section class="card">
+      <h2 class="h-sm">Fit assessment</h2>
+      <div class="verdict">
+        <div class="gauge" id="fitGauge"><div><b id="fitScore">0</b><small>fit score</small></div></div>
+        <div style="flex:1;min-width:240px;">
+          <span class="vbadge" id="fitBadge">—</span>
+          <p id="fitHeadline" class="kvs" style="margin:10px 0 0"></p>
+          <div id="fitMeta" class="kvs" style="margin-top:6px"></div>
+        </div>
+      </div>
+      <div id="fitRec" class="privacy" style="margin-top:14px"></div>
+      <div class="grid2" style="margin-top:14px">
+        <div><span class="lab">Why you fit</span><div id="fitStrengths" style="margin-top:6px"></div></div>
+        <div><span class="lab">Gaps</span><div id="fitGaps" style="margin-top:6px"></div></div>
+      </div>
+      <details style="margin-top:10px"><summary>Hard requirements &amp; skill coverage</summary>
+        <div id="fitReqs" style="margin-top:8px"></div>
+        <div style="margin-top:8px"><span class="lab">Must-have skills matched</span><div id="fitMatched"></div>
+        <span class="lab" style="display:inline-block;margin-top:6px">Must-have missing</span><div id="fitMissing"></div></div>
+      </details>
+      <button type="button" id="fitToOpt" class="full" style="margin-top:14px">Optimize my résumé for this job →</button>
+    </section>
+  </section>
+
+  <!-- COVER RESULT -->
+  <section id="coverResult" hidden>
+    <section class="card">
+      <div class="pvbar"><h2 class="h-sm" style="margin:0">Your cover letter</h2>
+        <div style="display:flex;gap:8px"><button type="button" id="clCopy">Copy</button><button type="button" id="clDownload">⬇ Download .docx</button></div></div>
+      <div class="letter" id="clPaper"></div>
+      <div class="hint" id="clNote" style="margin-top:8px"></div>
+    </section>
+  </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let pollTimer=null, R=null, pvTimer=null, FIT=null, COVER=null, coverRawOverride=false;
+let STYLE={font:'Calibri',header_align:'left',size_name:16,size_heading:12,size_sub:11,size_body:11,
+  bold_headings:true,bold_sub:true,bullet:'•',accent:'000000',line_spacing:1.0,section_space:4,
+  entry_space:2,margin_v:36,margin_h:36,education_order:'degree',divider:true,fit_one_page:false,
+  skills_layout:'categorized',date_format:'asis'};
+function readStyleControls(){
+  const v=id=>($(id)?$(id).value:''),c=id=>($(id)?$(id).checked:false);
+  const m={narrow:27,normal:36,wide:54}[v('#st_margin')]||36;
+  STYLE={font:v('#st_font')||'Calibri',header_align:v('#st_align')||'left',
+    size_name:+v('#st_name')||16,size_heading:+v('#st_heading')||12,size_sub:+v('#st_sub')||11,size_body:+v('#st_body')||11,
+    bold_headings:c('#st_bold_h'),bold_sub:c('#st_bold_s'),bullet:v('#st_bullet')||'•',
+    accent:(v('#st_accent')||'#000000').replace('#',''),line_spacing:+v('#st_ls')||1.0,
+    section_space:+v('#st_secspace')||0,entry_space:+v('#st_entryspace')||0,margin_v:m,margin_h:m,
+    education_order:v('#st_eduorder')||'degree',divider:c('#st_divider'),fit_one_page:c('#st_fit'),
+    skills_layout:v('#st_skills')||'categorized',date_format:v('#st_dateformat')||'asis'};
+}
+function applyPreviewStyle(){
+  const s=STYLE,PX=pt=>Math.round(pt*1.18),paper=$('#paper');if(!paper)return;
+  paper.style.fontFamily=`${s.font}, Calibri, Arial, sans-serif`;
+  paper.style.lineHeight=s.line_spacing;paper.style.fontSize=PX(s.size_body)+'px';
+  paper.style.padding=`${Math.max(14,Math.round(s.margin_v*0.7))}px ${Math.max(16,Math.round(s.margin_h*0.9))}px`;
+  const css=`#paper h1{font-size:${PX(s.size_name)}px;text-align:${s.header_align};}
+  #paper .ctline{text-align:${s.header_align};}
+  #paper h3{font-size:${PX(s.size_heading)}px;font-weight:${s.bold_headings?700:400};color:#${s.accent};${s.divider?'':'border-bottom:none;'}}
+  #paper .title,#paper .role{font-size:${PX(s.size_sub)}px;font-weight:${s.bold_sub?700:400};}
+  #paper .role .dt{font-weight:400;}
+  #paper .sk b{font-weight:${s.bold_sub?700:400};}
+  #paper ul{list-style:none;padding-left:16px;}#paper li{position:relative;}
+  #paper li::before{content:"${s.bullet} ";position:absolute;left:-14px;}`;
+  let tag=document.getElementById('previewStyle');
+  if(!tag){tag=document.createElement('style');tag.id='previewStyle';document.head.appendChild(tag);}
+  tag.textContent=css;
+}
+function onStyleChange(){readStyleControls();saveStyle();if(R)renderPreview();else applyPreviewStyle();}
+
+function detectProvider(k){k=(k||'').trim();
+  if(k.startsWith('sk-ant-'))return['anthropic','Anthropic (Claude)'];
+  if(k.startsWith('gsk_'))return['groq','Groq (Llama)'];
+  if(k.startsWith('pplx-'))return['perplexity','Perplexity (Sonar)'];
+  if(k.startsWith('AIza')||k.startsWith('AQ.'))return['gemini','Google (Gemini)'];
+  if(k.startsWith('sk-'))return['openai','OpenAI (GPT)'];
+  return[null,k?'Unrecognized key':'detecting…'];}
+function refreshKeyChip(v){const[p,l]=detectProvider(v);const c=$('#provChip');if(c){c.textContent=l;c.className='prov '+(p?'ok':(v?'bad':''));}}
+// API key is session-only: held in #api_key (hidden, read by baseForm) + sessionStorage, never on disk.
+function setSessionKey(v){v=(v||'').replace(/[^\x21-\x7e]/g,'');$('#api_key').value=v;try{v?sessionStorage.setItem('resopt_key',v):sessionStorage.removeItem('resopt_key');}catch(e){}refreshKeyChip(v);}
+function loadKeySession(){let v='';try{v=sessionStorage.getItem('resopt_key')||'';}catch(e){}if(v&&$('#set_key')){$('#set_key').value=v;setSessionKey(v);}}
+$('#set_key').addEventListener('input',e=>setSessionKey(e.target.value));
+
+// drag & drop upload
+const drop=$('#drop'),file=$('#resume_file');
+drop.addEventListener('click',()=>file.click());
+['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('hot');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('hot');}));
+drop.addEventListener('drop',e=>{if(e.dataTransfer.files.length){file.files=e.dataTransfer.files;showFile();}});
+file.addEventListener('change',showFile);
+function showFile(){$('#dzname').textContent=file.files.length?('✓ '+file.files[0].name):'';}
+
+async function loadMeta(){
+  const {portals}=await (await fetch('/api/ats')).json();
+  const sel=$('#ats'), dsel=$('#pf_defats');
+  portals.forEach(p=>{const o=document.createElement('option');o.value=p.key;o.textContent=`${p.name} — ${p.category}`;sel.appendChild(o);
+    if(dsel)dsel.appendChild(o.cloneNode(true));});
+  sel.value='generic';
+}
+
+function pills(el,items,cls){el.innerHTML=(items&&items.length)?items.map(k=>`<span class="pill ${cls}">${esc(k)}</span>`).join(''):'<span class="muted" style="font-size:12px">—</span>';}
+
+function renderResult(j){
+  const r=j.result, rep=r.report;
+  $('#results').style.display='block';
+  $('#scoreNum').textContent=rep.ats_score;$('#gauge').style.setProperty('--val',rep.ats_score);
+  $('#titleOut').textContent=r.job_title;$('#portalOut').textContent=R.ats||'';
+  const t=rep.pass_threshold;
+  $('#threshOut').innerHTML=rep.passes_threshold?`<span style="color:var(--accent2)">✓ Above the ${t.low}–${t.high}% pass band</span>`:`<span style="color:var(--warn)">Below the ${t.low}% band — see suggestions</span>`;
+  $('#reqOut').innerHTML=rep.required_total?`<span style="color:${rep.required_matched===rep.required_total?'var(--accent2)':'var(--warn)'}">Required keywords: ${rep.required_matched}/${rep.required_total} matched</span>`:'';
+  pills($('#matched'),rep.matched_keywords,'ok');pills($('#nearmiss'),rep.near_miss_keywords,'near');pills($('#missing'),rep.missing_keywords,'miss');
+  const sg=rep.suggestions||[];
+  $('#suggestions').innerHTML=sg.length?sg.map(s=>`<div class="sug ${s.type}"><span class="tag">${s.type}</span>${esc(s.text)}</div>`).join(''):'<div class="muted" style="font-size:13px">Every targeted keyword is present.</div>';
+  $('#checklist').innerHTML=rep.checklist.map(c=>`<div class="check"><span class="mark ${c.ok?'ok':'no'}">${c.ok?'✓':'✕'}</span><div><div>${esc(c.label)}</div>${c.detail?`<div class="detail">${esc(c.detail)}</div>`:''}</div></div>`).join('');
+  $('#problemOut').textContent=r.problem||'';
+  renderEditor();renderPreview();
+}
+
+// ---------- editor ----------
+const LABELS={contact:'Contact',summary:'Summary',skills:'Skills',experience:'Work experience',projects:'Projects',education:'Education',certifications:'Certifications'};
+function ta(value,oninput,ph){const t=document.createElement('textarea');t.value=value||'';t.placeholder=ph||'';t.className='ed';t.addEventListener('input',()=>{oninput(t.value);schedulePreview();});return t;}
+function tx(value,oninput,ph){const t=document.createElement('input');t.type='text';t.value=value||'';t.placeholder=ph||'';t.className='ed';t.addEventListener('input',()=>{oninput(t.value);schedulePreview();});return t;}
+function schedulePreview(){clearTimeout(pvTimer);pvTimer=setTimeout(renderPreview,140);}
+
+function entry(arr,i,label){
+  const e=document.createElement('div');e.className='entry';e.dataset.idx=i;
+  const bar=document.createElement('div');bar.className='ebar';
+  bar.innerHTML=`<span class="drag" title="Drag to reorder">⠿</span><span class="elab">${label} ${i+1}</span><button type="button" class="del" title="Remove">✕</button>`;
+  bar.querySelector('.del').onclick=()=>{arr.splice(i,1);refresh();};
+  e.appendChild(bar);
+  return e;
+}
+
+function sectionBody(key){
+  const d=R.data, wrap=document.createElement('div');const add=el=>wrap.appendChild(el);
+  if(key==='summary'){add(ta(d.summary,v=>d.summary=v,'Summary'));}
+  else if(key==='contact'){['name','phone','email','linkedin','github','portfolio','location'].forEach(f=>add(tx(R.contact[f],v=>R.contact[f]=v,f)));}
+  else if(key==='skills'){d.skills.forEach((cat,i)=>{const e=entry(d.skills,i,'Skill group');
+    e.appendChild(tx(cat.name,v=>cat.name=v,'Category name'));
+    e.appendChild(ta((cat.skills||[]).join(', '),v=>cat.skills=v.split(',').map(s=>s.trim()).filter(Boolean),'Comma-separated skills'));add(e);});
+    makeSortable(wrap,d.skills);}
+  else if(key==='experience'){d.experiences.forEach((x,i)=>{const e=entry(d.experiences,i,'Role');
+    e.appendChild(tx(x.title,v=>x.title=v,'Title'));e.appendChild(tx(x.company,v=>x.company=v,'Company'));
+    const r=document.createElement('div');r.className='row';const a=document.createElement('div');a.appendChild(tx(x.duration,v=>x.duration=v,'Dates'));const b=document.createElement('div');b.appendChild(tx(x.location,v=>x.location=v,'Location'));r.append(a,b);e.appendChild(r);
+    e.appendChild(tx(x.bridge_line||'',v=>x.bridge_line=v,'Bridge line (italic, optional)'));
+    e.appendChild(ta((x.bullets||[]).join('\n'),v=>x.bullets=v.split('\n').map(s=>s.trim()).filter(Boolean),'One bullet per line'));add(e);});
+    makeSortable(wrap,d.experiences);}
+  else if(key==='projects'){d.projects.forEach((x,i)=>{const e=entry(d.projects,i,'Project');
+    e.appendChild(tx(x.title,v=>x.title=v,'Project title'));
+    e.appendChild(ta((x.bullets||[]).join('\n'),v=>x.bullets=v.split('\n').map(s=>s.trim()).filter(Boolean),'One bullet per line'));add(e);});
+    makeSortable(wrap,d.projects);}
+  else if(key==='education'){(d.education||[]).forEach((x,i)=>{const e=entry(d.education,i,'Degree');
+    e.appendChild(tx(x.degree,v=>x.degree=v,'Degree'));e.appendChild(tx(x.school,v=>x.school=v,'School'));
+    const r=document.createElement('div');r.className='row';const a=document.createElement('div');a.appendChild(tx(x.dates,v=>x.dates=v,'Dates'));const b=document.createElement('div');b.appendChild(tx(x.gpa,v=>x.gpa=v,'GPA'));r.append(a,b);e.appendChild(r);add(e);});
+    makeSortable(wrap,d.education);}
+  else if(key==='certifications'){(d.certifications||[]).forEach((x,i)=>{const e=entry(d.certifications,i,'Certification');
+    e.appendChild(tx(x.name,v=>x.name=v,'Certification'));e.appendChild(tx(x.issuer,v=>x.issuer=v,'Issuer'));e.appendChild(tx(x.url,v=>x.url=v,'URL (plain text)'));add(e);});
+    makeSortable(wrap,d.certifications);}
+  return wrap;
+}
+
+// HTML5 drag-and-drop sorting via the ⠿ handle. `arr` is the backing array.
+function makeSortable(container,arr){
+  let from=null;
+  [...container.children].forEach((el,idx)=>{
+    const handle=el.querySelector('.drag');
+    if(handle){handle.draggable=true;
+      handle.addEventListener('dragstart',e=>{from=idx;el.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text','x');});
+      handle.addEventListener('dragend',()=>el.classList.remove('dragging'));}
+    el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('dropover');});
+    el.addEventListener('dragleave',()=>el.classList.remove('dropover'));
+    el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('dropover');
+      if(from===null||from===idx)return;const[m]=arr.splice(from,1);arr.splice(idx,0,m);from=null;refresh();});
+  });
+}
+
+function renderEditor(){
+  const host=$('#editor');host.innerHTML='';
+  R.section_order.forEach((key,i)=>{
+    if(key==='contact'&&!Object.values(R.contact).some(Boolean))return;
+    const sec=document.createElement('div');sec.className='sec';sec.dataset.idx=i;
+    const hd=document.createElement('div');hd.className='hd';
+    hd.innerHTML=`<span class="drag" title="Drag to reorder section">⠿</span><span class="nm">${LABELS[key]||key}</span>`;
+    const bd=document.createElement('div');bd.className='bd';bd.appendChild(sectionBody(key));
+    sec.append(hd,bd);host.appendChild(sec);
+  });
+  makeSortable(host,R.section_order);
+}
+function refresh(){renderEditor();renderPreview();}
+
+// ---------- live preview (mirrors the .docx) ----------
+// Date-format mirror of formatter._fmt_dates so the preview matches the .docx exactly.
+const _MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const _MONIDX={};_MONTHS.forEach((m,i)=>{_MONIDX[m.toLowerCase()]=i+1;_MONIDX[m.slice(0,3).toLowerCase()]=i+1;});
+function _fmtOneDate(tok,f){const m=String(tok).trim().match(/^([A-Za-z]{3,9})\.?\s+(\d{4})$/);if(!m)return String(tok).trim();const idx=_MONIDX[m[1].toLowerCase()];if(!idx)return String(tok).trim();const yr=m[2];if(f==='num_year')return String(idx).padStart(2,'0')+'/'+yr;if(f==='year')return yr;return _MONTHS[idx-1].slice(0,3)+' '+yr;}
+function fmtDates(s){const f=(STYLE&&STYLE.date_format)||'asis';if(!s||f==='asis')return s;return String(s).split(/(\s*[-–—]\s*|\s+to\s+)/).map((p,i)=>i%2===0?_fmtOneDate(p,f):p).join('');}
+function renderPreview(){
+  const d=R.data,c=R.contact;let h=`<h1>${esc(c.name||'Your Name')}</h1>`;
+  const ctUrl=v=>{v=(v||'').trim();if(!v)return v;if(/^https?:|^mailto:/.test(v))return v;if(v.includes('@')&&!v.includes('/'))return 'mailto:'+v;return 'https://'+v;};
+  const parts=[];
+  [['phone',0],['email',1],['location',0],['linkedin',1],['github',1],['portfolio',1]].forEach(([k,link])=>{
+    const v=(c[k]||'').trim();if(!v)return;
+    parts.push(link?`<a href="${esc(ctUrl(v))}" target="_blank" rel="noopener">${esc(v)}</a>`:esc(v));});
+  if(parts.length)h+=`<div class="ctline">${parts.join('  ·  ')}</div>`;
+  if(d.job_title)h+=`<div class="title">${esc(d.job_title)}</div>`;
+  const S={
+    summary:()=>d.summary?`<h3>Summary</h3><div>${esc(d.summary)}</div>`:'',
+    skills:()=>{const cs=(d.skills||[]).filter(c=>(c.skills||[]).length);if(!cs.length)return '';
+      let body;
+      if(STYLE.skills_layout==='inline'){body=`<div class="sk">${esc(cs.flatMap(c=>c.skills||[]).join(', '))}</div>`;}
+      else{const gp=STYLE.skills_layout==='compact'?' style="margin:0"':'';
+        body=cs.map(c=>`<div class="sk"${gp}><b>${esc(c.name)}:</b> ${esc((c.skills||[]).join(', '))}</div>`).join('');}
+      return `<h3>Skills</h3>`+body;},
+    experience:()=>(d.experiences||[]).length?`<h3>Work Experience</h3>`+d.experiences.map(x=>`<div class="role"><span>${esc([x.title,x.company].filter(Boolean).join(', '))}</span><span class="dt">${esc([fmtDates(x.duration),x.location].filter(Boolean).join(' | '))}</span></div>${x.bridge_line?`<div class="bridge">${esc(x.bridge_line)}</div>`:''}<ul>${(x.bullets||[]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul>`).join(''):'',
+    projects:()=>(d.projects||[]).length?`<h3>Projects</h3>`+d.projects.map(p=>`<div class="title">${esc(p.title)}</div><ul>${(p.bullets||[]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul>`).join(''):'',
+    education:()=>(d.education||[]).length?`<h3>Education</h3>`+d.education.map(e=>{
+      const instFirst=STYLE.education_order==='institution';
+      const primary=instFirst?(e.school||''):e.degree;
+      const secondary=(instFirst?e.degree:(e.school||''))+(e.gpa?', GPA: '+e.gpa:'');
+      return `<div class="role"><span>${esc(primary)}</span><span class="dt">${esc(fmtDates(e.dates||''))}</span></div><div>${esc(secondary)}</div>`;}).join(''):'',
+    certifications:()=>(d.certifications||[]).length?`<h3>Certifications</h3>`+d.certifications.map(x=>`<div>${esc(x.name)}${x.issuer?' — '+esc(x.issuer):''}${x.url?'  '+esc(x.url):''}</div>`).join(''):'',
+    contact:()=>'',
+  };
+  R.section_order.forEach(k=>{if(S[k])h+=S[k]();});
+  $('#paper').innerHTML=h;
+  applyPreviewStyle();
+}
+
+// Save a blob as a file — native dialog in the desktop app, link download in the browser.
+async function saveBlob(blob,fname){
+  if(window.pywebview&&window.pywebview.api&&window.pywebview.api.save_docx){
+    const b64=await new Promise(r=>{const fr=new FileReader();fr.onloadend=()=>r(fr.result.split(',')[1]);fr.readAsDataURL(blob);});
+    const out=await window.pywebview.api.save_docx(b64,fname);
+    if(out&&out.ok===false&&!out.cancelled)alert('Save failed: '+(out.error||'unknown'));
+    return;
+  }
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=fname; a.rel='noopener'; a.style.display='none';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{document.body.removeChild(a); URL.revokeObjectURL(url);},2000);
+}
+
+// résumé download always reflects the current (edited + reordered) state
+async function downloadResume(fmt){
+  if(!R){alert('Generate a résumé first.');return;}
+  const fname=`${$('#lastname').value||'Resume'}_${$('#company').value||'Company'}.${fmt}`;
+  try{
+    const res=await fetch('/api/render',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ats:R.ats,fmt,company:$('#company').value,lastname:$('#lastname').value,section_order:R.section_order,contact:R.contact,data:R.data,style:STYLE})});
+    if(!res.ok){alert('Download failed ('+res.status+'). Please try again.');return;}
+    await saveBlob(await res.blob(),fname);
+  }catch(err){alert('Download error: '+(err&&err.message||err));}
+}
+$('#dlLink').addEventListener('click',e=>{e.preventDefault();downloadResume('docx');});
+$('#dlPdf').addEventListener('click',e=>{e.preventDefault();downloadResume('pdf');});
+
+async function poll(id){
+  const j=await (await fetch(`/api/jobs/${id}`)).json();const p=j.progress;
+  $('#status').style.display='block';
+  $('#statusLabel').textContent=j.status==='error'?'Error':p.label;
+  $('#statusPct').textContent=j.status==='done'?'complete':`${p.percent}%`;$('#bar').style.width=`${p.percent}%`;
+  if(j.status==='error'){clearInterval(pollTimer);$('#statusErr').textContent=j.error;$('#go').disabled=false;return;}
+  if(j.status==='done'){clearInterval(pollTimer);const r=j.result;
+    R={ats:$('#ats').value,contact:r.contact||{},section_order:r.section_order.slice(),
+       data:{job_title:r.job_title,summary:r.summary,skills:r.skills,experiences:r.experiences,projects:r.projects,education:r.education,certifications:r.certifications}};
+    renderResult(j);updateCoverLock();$('#go').disabled=false;$('#results').scrollIntoView({behavior:'smooth'});}
+}
+
+// Shared inputs (key + résumé + JD + target title) feed all three tabs.
+function baseForm(){
+  const[p]=detectProvider($('#api_key').value);
+  const fd=new FormData($('#form'));            // api_key, resume/resume_file, jd, ats, target_title
+  if((window.FIT_FIXABLE||[]).length)fd.set('fix_gaps_json',JSON.stringify(window.FIT_FIXABLE.slice(0,6)));  // fit-check → optimize loop
+  fd.set('provider',p||'');
+  fd.set('economy',$('#economy').checked?'on':'');
+  return [fd,p];
+}
+
+// ---------- optimize ----------
+async function runOptimize(){
+  const[fd,p]=baseForm();
+  if(!p){$('#set_key').scrollIntoView({behavior:'smooth',block:'center'});$('#set_key').focus();return;}
+  $('#go').disabled=true;$('#results').style.display='none';$('#statusErr').textContent='';
+  fd.set('lastname',$('#lastname').value);fd.set('company',$('#company').value);fd.set('max_bullets',$('#max_bullets').value);
+  fd.set('confirmed_tools',confirmedTools());
+  ['name','phone','email','linkedin','location'].forEach(f=>{const el=document.querySelector(`#panelOpt input[name="${f}"]`);if(el&&el.value)fd.set(f,el.value);});
+  // local Profile -> GitHub/portfolio + education/certs (overrides extraction)
+  const pf=collectProfile();
+  if(pf.contact.github)fd.set('github',pf.contact.github);
+  if(pf.contact.portfolio)fd.set('portfolio',pf.contact.portfolio);
+  if(pf.education.length)fd.set('education_json',JSON.stringify(pf.education));
+  if(pf.certs.length)fd.set('certs_json',JSON.stringify(pf.certs));
+  try{const res=await fetch('/api/jobs',{method:'POST',body:fd});
+    if(!res.ok)throw new Error((await res.json()).detail||'Request failed');
+    const{id}=await res.json();clearInterval(pollTimer);poll(id);pollTimer=setInterval(()=>poll(id),1400);
+  }catch(err){$('#status').style.display='block';$('#statusErr').textContent=err.message;$('#go').disabled=false;}
+}
+$('#go').addEventListener('click',runOptimize);
+$('#form').addEventListener('submit',e=>{e.preventDefault();if(document.querySelector('.tab.active').dataset.tab==='optimize')runOptimize();});
+
+// ---------- fit check ----------
+async function runFit(){
+  const[fd,p]=baseForm();
+  if(!p){$('#fitErr').textContent='Paste your AI key first — the field at the top of the form.';$('#set_key').scrollIntoView({behavior:'smooth',block:'center'});$('#set_key').focus();return;}
+  $('#goFit').disabled=true;$('#fitErr').textContent='';$('#fitStatus').style.display='block';$('#fitResult').hidden=true;
+  try{const res=await fetch('/api/qualify',{method:'POST',body:fd});
+    if(!res.ok)throw new Error((await res.json()).detail||'Request failed');
+    FIT=(await res.json()).result;renderFit(FIT);
+  }catch(err){$('#fitErr').textContent=err.message;}
+  finally{$('#goFit').disabled=false;$('#fitStatus').style.display='none';}
+}
+function renderFit(r){
+  $('#fitScore').textContent=r.fit_score;$('#fitGauge').style.setProperty('--val',r.fit_score);
+  const b=$('#fitBadge');b.textContent=r.verdict_label;b.className='vbadge v-'+r.verdict;
+  $('#fitHeadline').textContent=r.headline||'';
+  const ey=r.experience_years||{},ed=r.education||{},ms=r.must_have_skills||{},meta=[];
+  if(ey.required||ey.candidate)meta.push(`Experience: ${esc(ey.candidate||'?')}${ey.required?` vs ${esc(ey.required)} required`:''} ${ey.meets?'✓':'⚠'}`);
+  if(ed.required||ed.candidate)meta.push(`Education: ${esc(ed.candidate||'?')} ${ed.meets?'✓':'⚠'}`);
+  if(typeof ms.coverage_pct==='number')meta.push(`Must-have skills: ${ms.coverage_pct}% covered`);
+  $('#fitMeta').innerHTML=meta.join(' &nbsp;·&nbsp; ');
+  $('#fitStrengths').innerHTML=(r.strengths||[]).map(s=>`<div class="gli">✓ <span>${esc(s)}</span></div>`).join('')||'<span class="muted">—</span>';
+  $('#fitGaps').innerHTML=(r.gaps||[]).map(g=>`<div class="gli"><span class="sev sev-${esc(g.severity||'minor')}">${esc(g.severity||'')}</span><span>${esc(g.gap||'')}${g.fixable_by_optimization?' · fixable by optimizing':''}</span></div>`).join('')||'<span class="muted">None flagged</span>';
+  window.FIT_FIXABLE=(r.gaps||[]).filter(g=>g.fixable_by_optimization&&g.gap).map(g=>String(g.gap));
+  if(window.FIT_FIXABLE.length)$('#fitGaps').insertAdjacentHTML('beforeend',`<div class="hint" style="margin-top:8px">→ ${window.FIT_FIXABLE.length} fixable gap${window.FIT_FIXABLE.length>1?'s':''} will be auto-targeted when you optimize.</div>`);
+  $('#fitReqs').innerHTML=(r.hard_requirements||[]).map(h=>`<div class="reqrow"><span class="st st-${esc(h.status||'')}">${esc(h.status||'')}</span><div><b>${esc(h.requirement||'')}</b>${h.evidence?`<div class="detail" style="font-size:12px">${esc(h.evidence)}</div>`:''}</div></div>`).join('')||'<span class="muted">—</span>';
+  pills($('#fitMatched'),ms.matched,'ok');pills($('#fitMissing'),ms.missing,'miss');
+  const rec=$('#fitRec');rec.textContent=r.recommendation||'';rec.style.color=r.optimization_helps?'':'var(--warn)';
+  $('#fitToOpt').textContent=r.optimization_helps?'Optimize my résumé for this job →':'Optimize anyway →';
+  $('#fitResult').hidden=false;$('#fitResult').scrollIntoView({behavior:'smooth'});
+}
+
+// ---------- cover letter ----------
+// Serialize the optimized résumé (R) back into plain text so the cover letter is written from it.
+function resumeTextFromData(R){
+  const c=R.contact||{},d=R.data||{},L=[];
+  L.push([c.name,c.email,c.phone,c.location,c.linkedin,c.github,c.portfolio].filter(Boolean).join(' | '));
+  if(d.job_title)L.push(d.job_title);
+  if(d.summary)L.push('\nSUMMARY\n'+d.summary);
+  if((d.skills||[]).length)L.push('\nSKILLS\n'+d.skills.map(s=>`${s.name}: ${(s.skills||[]).join(', ')}`).join('\n'));
+  if((d.experiences||[]).length){L.push('\nEXPERIENCE');d.experiences.forEach(x=>{L.push(`${[x.title,x.company].filter(Boolean).join(', ')} | ${[x.duration,x.location].filter(Boolean).join(' | ')}`);(x.bullets||[]).forEach(b=>L.push('- '+b));});}
+  if((d.projects||[]).length){L.push('\nPROJECTS');d.projects.forEach(x=>{L.push(x.title||'');(x.bullets||[]).forEach(b=>L.push('- '+b));});}
+  if((d.education||[]).length){L.push('\nEDUCATION');d.education.forEach(e=>L.push([e.degree,e.school,e.dates,e.gpa].filter(Boolean).join(', ')));}
+  if((d.certifications||[]).length){L.push('\nCERTIFICATIONS');d.certifications.forEach(x=>L.push([x.name,x.issuer].filter(Boolean).join(' — ')));}
+  return L.join('\n');
+}
+async function runCover(){
+  const[fd,p]=baseForm();
+  if(!p){$('#coverErr').textContent='Add your AI key in Settings (⚙) first.';return;}
+  if(R&&!coverRawOverride){fd.set('resume',resumeTextFromData(R));fd.delete('resume_file');}
+  fd.set('company',$('#cl_company').value||'Company');
+  if($('#cl_name').value)fd.set('name',$('#cl_name').value);
+  fd.set('tone',$('#cl_tone').value);fd.set('hiring_manager',$('#cl_hm').value||'');
+  $('#goCover').disabled=true;$('#coverErr').textContent='';$('#coverStatus').style.display='block';$('#coverResult').hidden=true;
+  try{const res=await fetch('/api/cover-letter',{method:'POST',body:fd});
+    if(!res.ok)throw new Error((await res.json()).detail||'Request failed');
+    COVER=await res.json();renderCover(COVER);
+  }catch(err){$('#coverErr').textContent=err.message;}
+  finally{$('#goCover').disabled=false;$('#coverStatus').style.display='none';}
+}
+function renderCover(j){
+  $('#clPaper').textContent=j.text||'';
+  $('#clNote').textContent=(j.provider&&j.provider!=='mock'?`Generated with ${j.provider}. `:'')+'Review and personalize before sending.';
+  $('#coverResult').hidden=false;$('#coverResult').scrollIntoView({behavior:'smooth'});
+}
+$('#goFit').addEventListener('click',runFit);
+$('#goCover').addEventListener('click',runCover);
+$('#clCopy').addEventListener('click',()=>{if(COVER)navigator.clipboard.writeText(COVER.text).then(()=>{const b=$('#clCopy');b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy',1500);});});
+$('#clDownload').addEventListener('click',()=>{
+  if(!COVER)return;
+  const bytes=Uint8Array.from(atob(COVER.docx_b64),c=>c.charCodeAt(0));
+  saveBlob(new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}),COVER.filename);
+});
+
+// ---------- profile (stored locally on this device only) ----------
+const PROFILE_KEY='resopt_profile', STYLE_KEY='resopt_style';
+let PF_RESUMES=[];  // [{role, filename, text}] — saved master résumés (max 3)
+function pfEduRow(e){e=e||{};const d=document.createElement('div');d.className='entry';
+  d.innerHTML=`<div class="row"><div><input type="text" class="pf-deg" placeholder="Degree" /></div><div><input type="text" class="pf-sch" placeholder="School" /></div></div>
+  <div class="row" style="margin-top:6px"><div><input type="text" class="pf-dt" placeholder="Dates e.g. Aug 2022 - May 2024" /></div><div><input type="text" class="pf-gpa" placeholder="GPA (optional)" /></div></div>
+  <button type="button" class="del" style="margin-top:6px;width:auto;padding:4px 10px">✕ remove</button>`;
+  d.querySelector('.pf-deg').value=e.degree||'';d.querySelector('.pf-sch').value=e.school||'';d.querySelector('.pf-dt').value=e.dates||'';d.querySelector('.pf-gpa').value=e.gpa||'';
+  d.querySelector('.del').onclick=()=>d.remove();return d;}
+function pfCertRow(c){c=c||{};const d=document.createElement('div');d.className='entry';
+  d.innerHTML=`<input type="text" class="pf-cn" placeholder="Certification name" />
+  <div class="row" style="margin-top:6px"><div><input type="text" class="pf-ci" placeholder="Issuer" /></div><div><input type="text" class="pf-cu" placeholder="URL (optional)" /></div></div>
+  <button type="button" class="del" style="margin-top:6px;width:auto;padding:4px 10px">✕ remove</button>`;
+  d.querySelector('.pf-cn').value=c.name||'';d.querySelector('.pf-ci').value=c.issuer||'';d.querySelector('.pf-cu').value=c.url||'';
+  d.querySelector('.del').onclick=()=>d.remove();return d;}
+function pfExpRow(x){x=x||{};const d=document.createElement('div');d.className='entry';
+  d.innerHTML=`<div class="row"><div><input type="text" class="pf-xt" placeholder="Title" /></div><div><input type="text" class="pf-xc" placeholder="Company" /></div></div>
+  <div class="row" style="margin-top:6px"><div><input type="text" class="pf-xd" placeholder="Dates e.g. May 2023 - Aug 2024" /></div><div><input type="text" class="pf-xl" placeholder="Location" /></div></div>
+  <textarea class="pf-xb" placeholder="One bullet per line — what you did + impact" style="margin-top:6px;min-height:54px"></textarea>
+  <button type="button" class="del" style="margin-top:6px;width:auto;padding:4px 10px">✕ remove</button>`;
+  d.querySelector('.pf-xt').value=x.title||'';d.querySelector('.pf-xc').value=x.company||'';d.querySelector('.pf-xd').value=x.dates||x.duration||'';d.querySelector('.pf-xl').value=x.location||'';d.querySelector('.pf-xb').value=(x.bullets||[]).join('\n');
+  d.querySelector('.del').onclick=()=>d.remove();return d;}
+function pfProjRow(x){x=x||{};const d=document.createElement('div');d.className='entry';
+  d.innerHTML=`<input type="text" class="pf-pt" placeholder="Project title" />
+  <textarea class="pf-pb" placeholder="One bullet per line" style="margin-top:6px;min-height:48px"></textarea>
+  <button type="button" class="del" style="margin-top:6px;width:auto;padding:4px 10px">✕ remove</button>`;
+  d.querySelector('.pf-pt').value=x.title||'';d.querySelector('.pf-pb').value=(x.bullets||[]).join('\n');
+  d.querySelector('.del').onclick=()=>d.remove();return d;}
+function collectProfile(){
+  const v=id=>($(id)?$(id).value.trim():'');
+  const edu=[...$('#pf_edu').children].map(r=>({degree:r.querySelector('.pf-deg').value.trim(),school:r.querySelector('.pf-sch').value.trim(),dates:r.querySelector('.pf-dt').value.trim(),gpa:r.querySelector('.pf-gpa').value.trim()})).filter(e=>e.degree||e.school);
+  const certs=[...$('#pf_certs').children].map(r=>({name:r.querySelector('.pf-cn').value.trim(),issuer:r.querySelector('.pf-ci').value.trim(),url:r.querySelector('.pf-cu').value.trim()})).filter(c=>c.name);
+  const bl=ta=>ta.value.split('\n').map(s=>s.trim().replace(/^[•\-]\s*/,'')).filter(Boolean);
+  const exp=[...($('#pf_exp')?$('#pf_exp').children:[])].map(r=>({title:r.querySelector('.pf-xt').value.trim(),company:r.querySelector('.pf-xc').value.trim(),dates:r.querySelector('.pf-xd').value.trim(),location:r.querySelector('.pf-xl').value.trim(),bullets:bl(r.querySelector('.pf-xb'))})).filter(x=>x.title||x.company);
+  const proj=[...($('#pf_proj')?$('#pf_proj').children:[])].map(r=>({title:r.querySelector('.pf-pt').value.trim(),bullets:bl(r.querySelector('.pf-pb'))})).filter(x=>x.title||x.bullets.length);
+  const skills=v('#pf_skills').split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
+  const titles=v('#pf_targets').split(',').map(s=>s.trim()).filter(Boolean);
+  return {contact:{first:v('#pf_first'),last:v('#pf_last'),phone:v('#pf_phone'),email:v('#pf_email'),location:v('#pf_location'),linkedin:v('#pf_linkedin'),github:v('#pf_github'),portfolio:v('#pf_portfolio')},education:edu,certs:certs,experiences:exp,projects:proj,skills:skills,resumes:PF_RESUMES,targets:{titles:titles,seniority:v('#pf_seniority'),default_ats:v('#pf_defats')}};}
+function renderResumes(){
+  const host=$('#pf_resumes');if(!host)return;host.innerHTML='';
+  PF_RESUMES.forEach((r,i)=>{const d=document.createElement('div');d.className='entry';
+    d.innerHTML=`<div class="row"><div><input type="text" class="pf-rrole" placeholder="Target role (e.g. Data Analyst)" /></div><div style="display:flex;align-items:center;gap:8px"><span class="muted" style="font-size:12px;flex:1">${esc(r.filename||'résumé')} · ${Math.round((r.text||'').length/1000)}k chars</span><button type="button" class="del" style="width:auto;padding:4px 10px">✕</button></div></div>`;
+    d.querySelector('.pf-rrole').value=r.role||'';
+    d.querySelector('.pf-rrole').addEventListener('input',e=>{PF_RESUMES[i].role=e.target.value;populateSaved();saveProfile();});
+    d.querySelector('.del').onclick=()=>{PF_RESUMES.splice(i,1);renderResumes();saveProfile();};
+    host.appendChild(d);});
+  if($('#pf_addResume'))$('#pf_addResume').style.display=PF_RESUMES.length>=3?'none':'';
+  populateSaved();}
+function populateSaved(){
+  const sel=$('#useSaved');
+  if(sel)sel.innerHTML='<option value="">—</option>'+PF_RESUMES.map((r,i)=>`<option value="${i}">${esc(r.role||r.filename||('Résumé '+(i+1)))}</option>`).join('');
+  renderResumePicker();}
+// True once the profile has enough to assemble a résumé (name + experience or skills).
+function profileHasResume(p){p=p||collectProfile();const c=p.contact||{};
+  return !!([c.first,c.last].filter(Boolean).join('')) && (((p.experiences||[]).length>0)||((p.skills||[]).length>0));}
+// Deterministic: assemble the profile's entered data into résumé text — verbatim, no AI.
+function resumeTextFromProfile(p){
+  p=p||collectProfile();const c=p.contact||{};const L=[];
+  const nm=[c.first,c.last].filter(Boolean).join(' ');if(nm)L.push(nm);
+  const cl=[c.email,c.phone,c.location,c.linkedin,c.github,c.portfolio].filter(Boolean).join(' | ');if(cl)L.push(cl);
+  if((p.skills||[]).length){L.push('\nSKILLS');L.push((p.skills||[]).join(', '));}
+  if((p.experiences||[]).length){L.push('\nWORK EXPERIENCE');(p.experiences||[]).forEach(x=>{
+    const head=[x.title,x.company].filter(Boolean).join(', '),dt=[x.dates,x.location].filter(Boolean).join(' | ');
+    L.push(head+(dt?'  ('+dt+')':''));(x.bullets||[]).forEach(b=>L.push('- '+b));});}
+  if((p.projects||[]).length){L.push('\nPROJECTS');(p.projects||[]).forEach(x=>{if(x.title)L.push(x.title);(x.bullets||[]).forEach(b=>L.push('- '+b));});}
+  if((p.education||[]).length){L.push('\nEDUCATION');(p.education||[]).forEach(e=>L.push([e.degree,e.school,e.dates,e.gpa&&('GPA: '+e.gpa)].filter(Boolean).join(', ')));}
+  if((p.certs||[]).length){L.push('\nCERTIFICATIONS');(p.certs||[]).forEach(x=>L.push([x.name,x.issuer].filter(Boolean).join(' — ')));}
+  return L.join('\n');}
+// Selectable sources: the profile-built résumé (if any) + up-to-3 saved uploads.
+function renderResumePicker(){
+  const host=$('#resumePicker');if(!host)return;
+  const p=collectProfile(),gen=profileHasResume(p);
+  if(!gen&&!PF_RESUMES.length){host.style.display='none';if($('#pickerHint'))$('#pickerHint').style.display='none';return;}
+  host.style.display='flex';if($('#pickerHint'))$('#pickerHint').style.display='block';
+  let html='';
+  if(gen){const wc=Math.round(resumeTextFromProfile(p).length/1000);
+    html+=`<div class="rcard gen" data-ri="-2"><span class="rdot"></span><div class="rmeta"><div class="rname">✨ Built from your profile</div><div class="rsub">From your setup details · ~${wc}k chars · auto-updates</div></div></div>`;}
+  html+=PF_RESUMES.map((r,i)=>`<div class="rcard" data-ri="${i}"><span class="rdot"></span><div class="rmeta"><div class="rname">${esc(r.role||r.filename||('Résumé '+(i+1)))}</div><div class="rsub">${esc(r.filename||'résumé')} · ${Math.round((r.text||'').length/1000)}k chars</div></div></div>`).join('');
+  html+=`<div class="rcard add" data-ri="-1">＋ Upload / paste a different résumé</div>`;
+  host.innerHTML=html;
+  [...host.querySelectorAll('.rcard')].forEach(el=>el.addEventListener('click',()=>{
+    const i=+el.dataset.ri;
+    host.querySelectorAll('.rcard').forEach(c=>c.classList.remove('sel'));
+    if(i===-1){$('#resume').value='';$('#dzname').textContent='';$('#drop').scrollIntoView({behavior:'smooth',block:'nearest'});return;}
+    el.classList.add('sel');
+    if(i===-2){$('#resume').value=resumeTextFromProfile();$('#dzname').textContent='✓ using résumé built from your profile';return;}
+    const r=PF_RESUMES[i];if(r){$('#resume').value=r.text;$('#dzname').textContent='✓ using saved: '+(r.role||r.filename||'résumé');}
+  }));}
+function applyProfile(p){
+  const c=(p&&p.contact)||{}, set=(id,val)=>{if($(id))$(id).value=val||'';};
+  set('#pf_first',c.first);set('#pf_last',c.last);set('#pf_phone',c.phone);set('#pf_email',c.email);set('#pf_location',c.location);set('#pf_linkedin',c.linkedin);set('#pf_github',c.github);set('#pf_portfolio',c.portfolio);
+  $('#pf_edu').innerHTML='';(p&&p.education||[]).forEach(e=>$('#pf_edu').appendChild(pfEduRow(e)));
+  $('#pf_certs').innerHTML='';(p&&p.certs||[]).forEach(x=>$('#pf_certs').appendChild(pfCertRow(x)));
+  if($('#pf_exp')){$('#pf_exp').innerHTML='';(p&&p.experiences||[]).forEach(x=>$('#pf_exp').appendChild(pfExpRow(x)));}
+  if($('#pf_proj')){$('#pf_proj').innerHTML='';(p&&p.projects||[]).forEach(x=>$('#pf_proj').appendChild(pfProjRow(x)));}
+  if($('#pf_skills'))$('#pf_skills').value=((p&&p.skills)||[]).join(', ');
+  PF_RESUMES=(p&&p.resumes)||[];renderResumes();
+  // mirror into the optimize contact-override fields so runOptimize sends them
+  const o=n=>document.querySelector('#panelOpt input[name="'+n+'"]'), nm=[c.first,c.last].filter(Boolean).join(' ');
+  if(o('name'))o('name').value=nm;if(o('phone'))o('phone').value=c.phone||'';if(o('email'))o('email').value=c.email||'';if(o('linkedin'))o('linkedin').value=c.linkedin||'';if(o('location'))o('location').value=c.location||'';
+  // target roles & preferences
+  const tg=(p&&p.targets)||{};
+  if($('#pf_targets'))$('#pf_targets').value=(tg.titles||[]).join(', ');
+  if($('#pf_seniority'))$('#pf_seniority').value=tg.seniority||'';
+  if($('#pf_defats'))$('#pf_defats').value=tg.default_ats||'';
+  const tt=document.querySelector('input[name="target_title"]');
+  if(tt&&!tt.value&&(tg.titles||[]).length)tt.value=tg.titles[0];
+  if($('#ats')&&tg.default_ats)$('#ats').value=tg.default_ats;}
+function saveProfile(){const p=collectProfile();try{localStorage.setItem(PROFILE_KEY,JSON.stringify(p));}catch(e){}applyProfile(p);const s=$('#pf_saved');s.style.display='inline';setTimeout(()=>s.style.display='none',2000);}
+function loadProfile(){let p=null;try{p=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null');}catch(e){}
+  if(p){applyProfile(p);}else{$('#pf_edu').appendChild(pfEduRow());$('#pf_certs').appendChild(pfCertRow());}}
+$('#pf_save').addEventListener('click',saveProfile);
+$('#pf_addEdu').addEventListener('click',()=>$('#pf_edu').appendChild(pfEduRow()));
+$('#pf_addCert').addEventListener('click',()=>$('#pf_certs').appendChild(pfCertRow()));
+$('#pf_addExp').addEventListener('click',()=>$('#pf_exp').appendChild(pfExpRow()));
+$('#pf_addProj').addEventListener('click',()=>$('#pf_proj').appendChild(pfProjRow()));
+$('#pf_addResume').addEventListener('click',()=>$('#pf_resumeFile').click());
+$('#pf_resumeFile').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;e.target.value='';
+  if(PF_RESUMES.length>=3){$('#pf_resumeErr').textContent='You can save up to 3 résumés.';return;}
+  $('#pf_resumeErr').textContent='Reading '+f.name+'…';
+  try{const fd=new FormData();fd.append('resume_file',f);
+    const res=await fetch('/api/extract-resume',{method:'POST',body:fd});
+    if(!res.ok)throw new Error((await res.json()).detail||'Could not read that file');
+    const j=await res.json();
+    PF_RESUMES.push({role:f.name.replace(/\.[^.]+$/,''),filename:j.filename,text:j.text});
+    renderResumes();saveProfile();$('#pf_resumeErr').textContent='';
+  }catch(err){$('#pf_resumeErr').textContent=err.message;}});
+$('#useSaved').addEventListener('change',e=>{
+  const i=e.target.value;if(i==='')return;
+  const r=PF_RESUMES[+i];if(r){$('#resume').value=r.text;$('#dzname').textContent='✓ using saved: '+(r.role||r.filename);}});
+
+// persist formatting (Style) preferences locally
+function saveStyle(){try{localStorage.setItem(STYLE_KEY,JSON.stringify(STYLE));}catch(e){}}
+function loadStyle(){let s=null;try{s=JSON.parse(localStorage.getItem(STYLE_KEY)||'null');}catch(e){}if(!s)return;
+  const set=(id,val)=>{if($(id)!=null&&val!=null&&val!=='')$(id).value=val;};
+  set('#st_font',s.font);set('#st_align',s.header_align);set('#st_bullet',s.bullet);if(s.accent)set('#st_accent','#'+s.accent);
+  set('#st_name',s.size_name);set('#st_heading',s.size_heading);set('#st_sub',s.size_sub);set('#st_body',s.size_body);set('#st_ls',s.line_spacing);
+  set('#st_secspace',s.section_space);set('#st_entryspace',s.entry_space);set('#st_eduorder',s.education_order);
+  set('#st_skills',s.skills_layout);set('#st_dateformat',s.date_format);
+  if($('#st_margin'))$('#st_margin').value=({27:'narrow',36:'normal',54:'wide'}[s.margin_v]||'normal');
+  if($('#st_bold_h'))$('#st_bold_h').checked=s.bold_headings!==false;if($('#st_bold_s'))$('#st_bold_s').checked=s.bold_sub!==false;
+  if($('#st_divider'))$('#st_divider').checked=s.divider!==false;if($('#st_fit'))$('#st_fit').checked=!!s.fit_one_page;
+  readStyleControls();}
+
+// ---------- confirm your tools ----------
+function confirmedTools(){return [...document.querySelectorAll('.tool-cb:checked')].map(c=>c.value).join(',');}
+async function scanTools(){
+  const[fd,p]=baseForm();
+  if(!p){$('#toolsResult').innerHTML='<span class="err">Enter a valid API key above first.</span>';return;}
+  $('#scanTools').disabled=true;$('#toolsStatus').style.display='block';$('#toolsResult').innerHTML='';
+  try{const res=await fetch('/api/tool-coverage',{method:'POST',body:fd});
+    if(!res.ok)throw new Error((await res.json()).detail||'Request failed');
+    renderTools(await res.json());
+  }catch(e){$('#toolsResult').innerHTML=`<span class="err">${esc(e.message)}</span>`;}
+  finally{$('#scanTools').disabled=false;$('#toolsStatus').style.display='none';}
+}
+function renderTools(j){
+  let h='';
+  if((j.matched||[]).length)
+    h+=`<span class="lab">Already on your résumé ✓</span><div style="margin:4px 0 10px">${j.matched.map(t=>`<span class="pill ok">${esc(t)}</span>`).join('')}</div>`;
+  const opts=[...(j.adjacent||[]).map(a=>({tool:a.jd_tool,note:`you have ${esc((a.your_tools||[]).join(', '))} (${esc(a.category)})`})),
+              ...(j.missing||[]).map(m=>({tool:m,note:'not on your résumé'}))];
+  if(opts.length){
+    h+=`<span class="lab">The job asks for these — tick any you've genuinely used:</span>`;
+    h+=opts.map(o=>`<label style="display:flex;gap:8px;align-items:flex-start;margin:5px 0;font-weight:400;cursor:pointer;">
+      <input type="checkbox" class="tool-cb" value="${esc(o.tool)}" style="width:auto;margin-top:3px;" />
+      <span><b>${esc(o.tool)}</b> <span class="muted" style="font-size:12px">— ${o.note}</span></span></label>`).join('');
+    h+=`<div class="hint">Ticked tools get woven into your bullets when you optimize. Only add ones you can defend.</div>`;
+  }else if(!(j.matched||[]).length){h+='<span class="muted" style="font-size:13px">No specific tools detected in this job.</span>';}
+  $('#toolsResult').innerHTML=h;
+}
+$('#scanTools').addEventListener('click',scanTools);
+
+// ---------- tabs ----------
+function setTab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.querySelectorAll('.tabpanel').forEach(p=>{p.hidden=p.dataset.tab!==t;});
+  $('#results').style.display=(t==='optimize'&&R)?'block':'none';
+  $('#fitResult').hidden=!(t==='fit'&&FIT);
+  $('#coverResult').hidden=!(t==='cover'&&COVER);
+  updateCoverLock();
+}
+// Cover letter is locked until a résumé has been optimized (or the user opts into raw-résumé mode).
+function updateCoverLock(){
+  const unlocked=!!R||coverRawOverride;
+  if($('#coverLock'))$('#coverLock').style.display=unlocked?'none':'block';
+  if($('#coverForm'))$('#coverForm').style.display=unlocked?'block':'none';
+  if($('#coverSource'))$('#coverSource').style.display=(R&&!coverRawOverride)?'block':'none';
+  const tc=$('#tabCover');
+  if(tc){tc.classList.toggle('locked',!unlocked);tc.textContent=(unlocked?'Nº3 · Cover letter':'🔒 Nº3 · Cover letter');}
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+$('#fitToOpt').addEventListener('click',()=>{setTab('optimize');window.scrollTo({top:0,behavior:'smooth'});});
+
+['#st_font','#st_align','#st_bullet','#st_accent','#st_name','#st_heading','#st_sub','#st_body','#st_ls','#st_secspace','#st_entryspace','#st_margin','#st_eduorder','#st_skills','#st_dateformat','#st_bold_h','#st_bold_s','#st_divider','#st_fit'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',onStyleChange);});
+// ---------- onboarding wizard (local first-run setup; no server, no key step) ----------
+let _profilePanel=null,_borrowed=[];
+function borrowProfileInto(holder){
+  _profilePanel=document.querySelector('.tabpanel[data-tab="profile"]');
+  if(!_profilePanel)return;
+  _borrowed=[..._profilePanel.children].filter(ch=>!(ch.classList&&ch.classList.contains('step')));
+  _borrowed.forEach(ch=>holder.appendChild(ch));
+}
+function returnProfilePanel(){
+  if(!_profilePanel)return;
+  _borrowed.forEach(ch=>_profilePanel.appendChild(ch));
+  _borrowed=[];
+}
+function renderDots(n,total){$('#obDots').innerHTML=Array.from({length:total},(_,i)=>`<i class="${i===n?'on':''}"></i>`).join('');}
+let obIdx=0;
+function buildOb(){
+  $('#obBody').innerHTML=`
+    <div class="ob-step" data-s="0">
+      <div class="ob-ic">👋</div>
+      <h3 class="ob-h">Welcome to RESOPT</h3>
+      <p class="ob-sub">Tailor your résumé to any job in minutes — privately. Your key and résumé never leave this device.</p>
+      <div class="privacy">🔒 Everything you enter is saved on this device only.</div>
+      <label style="margin-top:12px">What should we call you?</label>
+      <input type="text" id="ob_first" placeholder="First name" />
+      <div class="ob-nav"><button type="button" class="full grow" id="ob_next0">Get started →</button></div>
+    </div>
+    <div class="ob-step" data-s="1" hidden>
+      <div class="ob-ic">🧾</div>
+      <h3 class="ob-h">Tell us about you</h3>
+      <p class="ob-sub">Saved on this device only — fills in every résumé automatically. No AI key needed here; add it in Settings when you optimize.</p>
+      <div id="ob_profileHolder"></div>
+      <div class="ob-nav"><button type="button" class="btn-ghost" id="ob_back1">← Back</button><button type="button" class="full grow" id="ob_next1">Continue →</button></div>
+    </div>
+    <div class="ob-step" data-s="2" hidden>
+      <div class="ob-ic gn">✅</div>
+      <h3 class="ob-h" id="ob_doneH">You're all set</h3>
+      <p class="ob-sub">Everything's saved on this device. Let's optimize your first résumé.</p>
+      <div id="ob_recap"></div>
+      <div class="ob-nav"><button type="button" class="btn-ghost" id="ob_back2">← Back</button><button type="button" class="full grow" id="ob_finish">Start optimizing →</button></div>
+    </div>`;
+  borrowProfileInto($('#ob_profileHolder'));
+  const pf=$('#pf_first');if(pf&&pf.value)$('#ob_first').value=pf.value;
+  $('#ob_next0').onclick=()=>{const f=$('#ob_first').value.trim();if(f&&$('#pf_first'))$('#pf_first').value=f;gotoOb(1);};
+  $('#ob_back1').onclick=()=>gotoOb(0);
+  $('#ob_next1').onclick=()=>{saveProfile();gotoOb(2);};
+  $('#ob_back2').onclick=()=>gotoOb(1);
+  $('#ob_finish').onclick=()=>finishOnboarding();
+}
+function gotoOb(n){
+  obIdx=n;
+  document.querySelectorAll('.ob-step').forEach(s=>s.hidden=(+s.dataset.s)!==n);
+  renderDots(n,3);
+  if(n===2){const r=collectProfile(),nr=(r.resumes||[]).length;
+    $('#ob_doneH').textContent="You're all set"+(r.contact.first?(', '+r.contact.first):'');
+    $('#ob_recap').innerHTML=[
+      'Profile saved on this device',
+      nr+' master résumé'+(nr===1?'':'s')+' ready',
+      (r.education||[]).length+' education · '+(r.certs||[]).length+' certifications'
+    ].map(t=>`<div class="ob-recap"><span class="ck">✓</span> ${esc(t)}</div>`).join('');}
+}
+function startOnboarding(){$('#wbbar').classList.remove('show');buildOb();gotoOb(0);$('#onboarding').classList.add('show');}
+function finishOnboarding(){
+  saveProfile();
+  try{localStorage.setItem('resopt_onboarded','1');}catch(e){}
+  returnProfilePanel();
+  $('#onboarding').classList.remove('show');
+  updateWelcomeBack();
+  setTab('optimize');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateWelcomeBack(){
+  let p=null,onb=false;
+  try{p=JSON.parse(localStorage.getItem('resopt_profile')||'null');}catch(e){}
+  try{onb=!!localStorage.getItem('resopt_onboarded');}catch(e){}
+  const first=p&&p.contact&&p.contact.first;
+  if(onb&&first){
+    $('#wbName').textContent='Welcome back, '+first;
+    $('#wbAv').textContent=((first[0]||'')+((p.contact.last&&p.contact.last[0])||'')).toUpperCase()||'·';
+    $('#wbSub').textContent=$('#api_key').value?'Profile restored · ready to optimize.':'Profile restored · paste your AI key to continue.';
+    $('#wbbar').classList.add('show');
+  }else $('#wbbar').classList.remove('show');
+}
+
+// profile / welcome-back wiring
+$('#set_redo').addEventListener('click',()=>startOnboarding());
+$('#wbRedo').addEventListener('click',()=>startOnboarding());
+$('#coverGoOpt').addEventListener('click',()=>setTab('optimize'));
+$('#coverOverride').addEventListener('click',()=>{coverRawOverride=true;updateCoverLock();});
+
+// ---------- bootstrap ----------
+loadProfile();   // restore saved personal info (local device only) + prefill optimize fields
+loadStyle();     // restore saved formatting preferences
+readStyleControls();
+loadKeySession();
+updateWelcomeBack();
+loadMeta().then(()=>{   // re-apply saved default ATS once portal options exist
+  let p=null;try{p=JSON.parse(localStorage.getItem('resopt_profile')||'null');}catch(e){}
+  const da=p&&p.targets&&p.targets.default_ats;
+  if(da){if($('#pf_defats'))$('#pf_defats').value=da;if($('#ats'))$('#ats').value=da;}
+});
+
+let _onboarded=false,_hasProfile=false;
+try{_onboarded=!!localStorage.getItem('resopt_onboarded');}catch(e){}
+try{_hasProfile=!!localStorage.getItem('resopt_profile');}catch(e){}
+if(!_onboarded&&!_hasProfile){setTab('optimize');startOnboarding();}
+else setTab('fit');
+</script>
+</body>
+</html>

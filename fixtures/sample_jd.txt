@@ -1,0 +1,20 @@
+Job Title: Business Intelligence Analyst
+
+We are seeking a Business Intelligence Analyst to join our growing analytics team. You will own dashboard development, data pipeline reporting, and cross-functional stakeholder communication.
+
+Responsibilities:
+- Build and maintain BI dashboards (Power BI or Tableau) for executive and operational reporting
+- Write complex SQL queries against our data warehouse to support ad hoc and recurring reporting needs
+- Use Python for data automation and ETL scripting
+- Partner with marketing, sales, and operations stakeholders to define KPIs and reporting requirements
+- Identify data quality issues and work with engineering to resolve them
+- Present findings and recommendations to senior leadership
+
+Requirements:
+- Bachelor's Degree in a quantitative field (Statistics, Economics, Computer Science, or related)
+- 3+ years of experience in business intelligence, data analysis, or reporting
+- Strong SQL skills required
+- Experience with Python for data manipulation (pandas)
+- Experience with Tableau or Power BI
+- Excellent stakeholder communication and presentation skills
+- Strong attention to detail and data quality mindset

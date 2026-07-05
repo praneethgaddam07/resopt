@@ -1,0 +1,5 @@
+# Extra deps for building/running the desktop app (on top of requirements.txt).
+# The hosted/web version does NOT need these.
+-r requirements.txt
+pywebview==5.3.2
+pyinstaller==6.11.1

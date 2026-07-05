@@ -1,0 +1,88 @@
+name: Build desktop apps
+
+# Builds RESOPT for Mac (.app) and Windows (.exe) natively on GitHub's runners and
+# publishes them to the PUBLIC downloads repo (praneethgaddam07/resopt).
+#
+# SETUP (one-time): add a repo secret named RELEASE_TOKEN = a Personal Access Token
+# with write access to the resopt repo (classic: `repo` scope; or fine-grained:
+# Contents read/write on praneethgaddam07/resopt). Settings -> Secrets and variables
+# -> Actions -> New repository secret.
+#
+# Trigger by pushing a version tag (e.g. `git tag v1.1 && git push origin v1.1`)
+# or run manually from the Actions tab.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-desktop.txt Pillow
+      - run: python packaging/make_icon.py
+      - name: Build RESOPT.app
+        run: |
+          pyinstaller --noconfirm --windowed --name "RESOPT" \
+            --icon packaging/assets/icon.icns \
+            --add-data "app/static:app/static" \
+            --add-data "app/workflow/master_taxonomy.json:app/workflow" \
+            --collect-all uvicorn --collect-all anthropic --collect-all openai \
+            --collect-all google.generativeai --collect-all webview \
+            --collect-submodules app desktop.py
+      - name: Smoke test (bundled server boots)
+        run: "'dist/RESOPT.app/Contents/MacOS/RESOPT' --selftest"
+      - name: Zip .app
+        run: cd dist && zip -qr "RESOPT-macOS.zip" "RESOPT.app"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RESOPT-macOS
+          path: dist/RESOPT-macOS.zip
+      - name: Publish to public resopt repo
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: praneethgaddam07/resopt
+          token: ${{ secrets.RELEASE_TOKEN }}
+          tag_name: ${{ github.ref_name }}
+          files: dist/RESOPT-macOS.zip
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-desktop.txt Pillow
+      - run: python packaging/make_icon.py
+      - name: Build RESOPT.exe
+        run: >
+          pyinstaller --noconfirm --windowed --onefile --name "RESOPT"
+          --icon packaging/assets/icon.ico
+          --add-data "app/static;app/static"
+          --add-data "app/workflow/master_taxonomy.json;app/workflow"
+          --collect-all uvicorn --collect-all anthropic --collect-all openai
+          --collect-all google.generativeai --collect-all webview
+          --collect-submodules app desktop.py
+      - name: Smoke test (bundled server boots)
+        run: dist\RESOPT.exe --selftest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RESOPT-Windows
+          path: dist/RESOPT.exe
+      - name: Publish to public resopt repo
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: praneethgaddam07/resopt
+          token: ${{ secrets.RELEASE_TOKEN }}
+          tag_name: ${{ github.ref_name }}
+          files: dist/RESOPT.exe

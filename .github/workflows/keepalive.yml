@@ -1,0 +1,19 @@
+name: Keep MCP connector awake
+
+# Render's free tier spins the service down after ~15 idle minutes; the 30-60s
+# cold start then times out connector clients ("MCP disconnected"). Pinging
+# /health every 10 minutes keeps it warm around the clock.
+# Costs ~seconds per run. Manual trigger included for testing.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /health
+        run: |
+          curl -fsS --max-time 60 --retry 3 --retry-delay 10 \
+            https://resopt-mcp.onrender.com/health

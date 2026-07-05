@@ -1,0 +1,26 @@
+# --- Web / API (stateless, no database) ---
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+pydantic==2.10.4
+
+# --- LLM (bring-your-own-key: any one of these) ---
+anthropic==0.42.0
+openai==1.59.6
+google-generativeai==0.8.3
+
+# --- Optional shared state (only used when REDIS_URL is set; else in-memory) ---
+# Enables restart-proof results + multi-instance serving. Sensitive inputs
+# (API key + résumé) are NEVER written to Redis — see app/store.py.
+redis==5.2.1
+
+# --- Document parsing / generation ---
+pypdf==5.1.0
+python-docx==1.1.2
+fpdf2==2.8.2  # text-based PDF export (pure Python, core fonts — no LibreOffice)
+# (MCP connector deps live in requirements-mcp.txt — kept separate to avoid a
+#  FastAPI/Starlette version clash.)
+
+# --- Dev / tests ---
+pytest==8.3.4
+httpx==0.28.1

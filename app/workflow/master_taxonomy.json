@@ -1,0 +1,17 @@
+{
+  "CRM": ["Salesforce", "HubSpot", "Zoho CRM", "Microsoft Dynamics", "Pipedrive", "Dynamics 365"],
+  "Statistical Packages": ["SAS", "SPSS", "Stata", "R", "MATLAB"],
+  "BI & Visualization": ["Power BI", "Tableau", "Looker", "Qlik", "QlikView", "Webi", "Lumira", "SAP Analysis", "Google Data Studio", "Cognos", "MicroStrategy"],
+  "Relational Databases": ["Oracle", "Teradata", "Snowflake", "PostgreSQL", "MySQL", "SQL Server", "Redshift", "BigQuery", "SAP HANA", "Db2"],
+  "NoSQL Databases": ["MongoDB", "Cassandra", "DynamoDB", "Redis"],
+  "ERP & Enterprise Systems": ["SAP", "PeopleSoft", "Workday", "Oracle EBS", "NetSuite"],
+  "ETL & Orchestration": ["Airflow", "dbt", "SSIS", "Informatica", "Autosys", "Talend", "Fivetran"],
+  "Programming Languages": ["Python", "SQL", "Java", "Scala", "C++", "R", "SAS", "Go", "Julia"],
+  "Python Data Stack": ["Pandas", "NumPy", "SciPy", "Matplotlib", "Seaborn", "Plotly"],
+  "Machine Learning": ["scikit-learn", "XGBoost", "LightGBM", "TensorFlow", "PyTorch", "Keras", "Random Forest", "Gradient Boosting", "Logistic Regression"],
+  "Cloud Platforms": ["AWS", "Azure", "GCP", "Google Cloud"],
+  "Big Data": ["Spark", "Hadoop", "Hive", "Kafka", "Databricks", "PySpark"],
+  "Version Control & Collaboration": ["Git", "GitHub", "GitLab", "Bitbucket", "JIRA", "Confluence", "MS Teams"],
+  "Spreadsheets & Office": ["Excel", "Google Sheets", "Word", "PowerPoint"],
+  "OS & Scripting": ["Unix", "Linux", "Shell", "Bash", "PuTTY", "PowerShell"]
+}

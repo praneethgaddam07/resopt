@@ -1,0 +1,31 @@
+Jordan Lee
+Data Analyst with 4 years of experience in business intelligence, reporting, and process improvement.
+
+EXPERIENCE
+
+Data Analyst, Northwind Retail Co — Jan 2022 to Present, Remote
+- Built weekly sales dashboards in Tableau pulling from a SQL data warehouse, used by regional managers for inventory decisions
+- Automated a manual monthly reporting process using Python and pandas, cutting report turnaround from 2 days to 2 hours
+- Partnered with the marketing team to analyze campaign performance and identify underperforming channels
+- Cleaned and validated incoming vendor data feeds, reducing data quality errors reported by downstream teams
+- Presented quarterly business reviews to senior leadership summarizing KPI trends and recommended actions
+
+Junior Analyst, Bright Path Analytics — Jun 2020 to Dec 2021, Chicago, IL
+- Maintained Excel-based tracking sheets for client deliverables across 10+ active accounts
+- Assisted senior analysts with ad hoc SQL queries to answer client data requests
+- Documented internal reporting processes to support new hire onboarding
+
+PROJECTS
+
+Customer Churn Prediction Model
+- Built a logistic regression model in Python to predict customer churn using historical transaction data
+- Visualized model results in a Tableau dashboard shared with the customer success team
+
+Personal Finance Tracker
+- Designed a personal budgeting tool using Google Sheets and Apps Script to automate expense categorization
+
+EDUCATION
+Bachelor of Science in Economics, University of Illinois — May 2020, Urbana, IL
+
+SKILLS
+SQL, Python, pandas, Tableau, Excel, data cleaning, dashboarding, stakeholder communication, Google Sheets, Apps Script

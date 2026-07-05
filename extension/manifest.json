@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "RESOPT — optimize your résumé in place",
+  "version": "1.0.0",
+  "description": "On a job posting, RESOPT detects the ATS, captures the description, and tailors your résumé — with the engine running locally on your machine.",
+  "permissions": ["sidePanel", "activeTab", "storage", "scripting"],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "https://raw.githubusercontent.com/*",
+    "*://*.greenhouse.io/*",
+    "*://jobs.lever.co/*",
+    "*://*.myworkdayjobs.com/*",
+    "*://*.icims.com/*",
+    "*://*.smartrecruiters.com/*",
+    "*://*.ashbyhq.com/*",
+    "*://*.bamboohr.com/*",
+    "*://www.linkedin.com/*",
+    "*://*.indeed.com/*"
+  ],
+  "background": { "service_worker": "background.js" },
+  "side_panel": { "default_path": "sidepanel.html" },
+  "action": { "default_title": "RESOPT — optimize this job", "default_icon": { "128": "icons/icon128.png" } },
+  "icons": { "128": "icons/icon128.png" },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.greenhouse.io/*",
+        "*://jobs.lever.co/*",
+        "*://*.myworkdayjobs.com/*",
+        "*://*.icims.com/*",
+        "*://*.smartrecruiters.com/*",
+        "*://*.ashbyhq.com/*",
+        "*://*.bamboohr.com/*",
+        "*://www.linkedin.com/jobs/*",
+        "*://*.indeed.com/*"
+      ],
+      "js": ["detect.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

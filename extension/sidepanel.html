@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RESOPT</title>
+<link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+<header class="top">
+  <span class="word">RESOPT</span>
+  <span id="engine" class="engine off"><span class="dot"></span><span id="engineLabel">checking…</span></span>
+</header>
+
+<main>
+  <!-- loading -->
+  <section id="view-loading" class="view">
+    <div class="spin"></div>
+    <p class="muted center">Connecting to your engine…</p>
+  </section>
+
+  <!-- State C: engine offline -->
+  <section id="view-offline" class="view hidden">
+    <div class="center pad">
+      <div class="badge-circle">⏻</div>
+      <h2>Your engine isn't running</h2>
+      <p class="muted">Start the RESOPT desktop app to optimize on your machine. Nothing runs in the cloud.</p>
+      <button id="retryBtn" class="cta">Retry connection</button>
+      <p style="margin-top:12px"><a id="dlLink" href="https://github.com/praneethgaddam07/resopt" target="_blank" rel="noopener">Don't have it yet? Download →</a></p>
+    </div>
+    <p class="foot">🔒 The engine is the app on your machine</p>
+  </section>
+
+  <!-- setup: API key + saved résumés -->
+  <section id="view-setup" class="view hidden">
+    <h2>Quick setup</h2>
+    <label for="keyInput">Your AI API key <span class="soft">(kept for this browser session only)</span></label>
+    <input id="keyInput" type="password" placeholder="sk-ant-… / sk-… / AIza… / gsk_… / pplx-…" autocomplete="off">
+    <p id="keyHint" class="lab" style="margin-top:5px"></p>
+
+    <label>Saved résumés</label>
+    <div id="resumeList"></div>
+    <label for="resumeLabel" style="margin-top:10px">Add a résumé</label>
+    <input id="resumeLabel" type="text" placeholder="Label (optional — defaults to file name)">
+    <button id="uploadBtn" class="ghost" style="margin-top:8px;flex:none">⬆ Upload PDF / DOCX / TXT</button>
+    <input id="resumeFile" type="file" accept=".pdf,.docx,.txt" style="display:none">
+    <p class="muted" style="font-size:11px;margin:8px 0 4px">or paste the text:</p>
+    <textarea id="resumeText" placeholder="Paste your résumé text…"></textarea>
+    <button id="saveResumeBtn" class="ghost" style="margin-top:8px;flex:none">Save pasted text</button>
+    <p id="resumeMsg" class="muted" style="font-size:11px;margin-top:6px"></p>
+
+    <button id="setupDoneBtn" class="cta" style="margin-top:16px">Done</button>
+  </section>
+
+  <!-- State A: job detected -->
+  <section id="view-job" class="view hidden">
+    <p class="lab">Job detected</p>
+    <div class="card">
+      <span id="atsChip" class="pill">ATS</span>
+      <p id="jobTitle" style="font-size:15px;font-weight:600;margin:9px 0 2px">Job title</p>
+      <p id="jobCompany" class="soft" style="font-size:12px;margin:0"></p>
+      <p id="jobMeta" class="muted" style="font-size:11px;margin:8px 0 0"></p>
+    </div>
+
+    <label for="resumeSelect">Use résumé</label>
+    <select id="resumeSelect"></select>
+
+    <button id="optimizeBtn" class="cta" style="margin-top:14px">Optimize for this job</button>
+    <p style="margin-top:10px;display:flex;justify-content:space-between">
+      <button id="openSetupBtn" class="setuplink">⚙ Key &amp; résumés</button>
+      <button id="rescanBtn" class="setuplink">↻ Re-scan page</button>
+    </p>
+    <p class="foot">🔒 Runs on your machine · nothing is uploaded</p>
+  </section>
+
+  <!-- busy -->
+  <section id="view-busy" class="view hidden">
+    <div class="spin"></div>
+    <p id="busyLabel" class="center soft">Optimizing…</p>
+    <div class="bar"><i id="busyBar" style="width:8%"></i></div>
+  </section>
+
+  <!-- State B: result -->
+  <section id="view-result" class="view hidden">
+    <p class="lab">ATS match</p>
+    <div style="display:flex;align-items:baseline;gap:8px">
+      <span id="scoreNum" class="score">0</span><span class="muted">/100</span>
+      <span id="scorePass" class="soft" style="margin-left:auto;font-size:12px"></span>
+    </div>
+    <div class="bar"><i id="scoreBar" style="width:0%"></i></div>
+
+    <p class="lab">Covered from the job description</p>
+    <div id="matchedChips"></div>
+
+    <p class="lab" style="margin-top:12px">Left out — not claimed without a basis</p>
+    <div id="missingChips"></div>
+    <p id="checklistLine" class="muted" style="font-size:11px;margin-top:10px"></p>
+
+    <div class="dl">
+      <button id="dlDocx" class="ghost">Download DOCX</button>
+      <button id="dlPdf" class="ghost">PDF</button>
+      <button id="reoptBtn" class="ghost" style="flex:none">↻</button>
+    </div>
+    <p class="foot">🔒 Generated on your machine · nothing is uploaded</p>
+  </section>
+
+  <!-- error -->
+  <section id="view-error" class="view hidden">
+    <div class="center pad">
+      <h2>Something went wrong</h2>
+      <p id="errorMsg" class="muted"></p>
+      <button id="errRetryBtn" class="cta">Back</button>
+    </div>
+  </section>
+</main>
+
+<script src="detect.js"></script>
+<script src="sidepanel.js"></script>
+</body>
+</html>
