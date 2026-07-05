@@ -289,7 +289,11 @@
       <div class="tabpanel" data-tab="hub" hidden>
         <div class="step">Saved Jobs</div>
         <p class="hint" style="margin-top:8px">Jobs you clip using the Chrome Extension appear here.</p>
-        <button type="button" id="refreshHubBtn" class="full btn-ghost" style="margin-bottom:14px">↻ Refresh Jobs</button>
+        <div style="display:flex;gap:10px;margin-bottom:14px">
+          <button type="button" id="refreshHubBtn" class="full btn-ghost">↻ Refresh Jobs</button>
+          <button type="button" id="synthMasterBtn" class="full" style="background:var(--accent2);color:#fff;border:none;">✨ Synthesize Master Resume</button>
+        </div>
+        <div id="synthMasterStatus" class="hint" style="display:none;margin-bottom:14px;color:var(--accent2);">Analyzing jobs and generating Master Resume... (this may take a minute)</div>
         <div id="hubList"></div>
       </div>
       <!-- FIT CHECK -->
@@ -1157,6 +1161,52 @@ else setTab('fit');
 async function loadHubJobs() {
   const refreshBtn = document.getElementById("refreshHubBtn");
   if (refreshBtn) refreshBtn.onclick = loadHubJobs;
+  
+  const synthBtn = document.getElementById("synthMasterBtn");
+  if (synthBtn) synthBtn.onclick = async () => {
+    const status = document.getElementById("synthMasterStatus");
+    status.style.display = "block";
+    status.textContent = "Analyzing jobs and generating Master Resume... (this may take a minute)";
+    
+    let baseRes = "";
+    if (window.PF_RESUMES && window.PF_RESUMES.length) baseRes = window.PF_RESUMES[0].text;
+    if (!baseRes) {
+      status.textContent = "Please add a base resume in the Start tab first.";
+      return;
+    }
+    
+    const prov = window.localStorage.getItem('resopt_provider') || 'anthropic';
+    const key = window.localStorage.getItem('resopt_api_key');
+    if (!key) {
+      status.textContent = "Please set an API key first.";
+      return;
+    }
+    
+    try {
+      const res = await fetch("/api/hub/synthesize-master", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ api_key: key, provider: prov, resume_text: baseRes })
+      });
+      if (!res.ok) {
+        let errStr = res.statusText;
+        try { const errObj = await res.json(); errStr = errObj.error || errStr; } catch(e){}
+        status.textContent = "Error: " + errStr;
+        return;
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Master_Resume.docx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      status.textContent = "Master Resume generated and downloaded successfully!";
+    } catch (e) {
+      status.textContent = "Error: " + e.message;
+    }
+  };
   
   const list = document.getElementById("hubList");
   list.innerHTML = "<div class='hint'>Loading jobs...</div>";

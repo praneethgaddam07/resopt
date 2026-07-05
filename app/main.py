@@ -35,14 +35,84 @@ DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.docu
 
 app = FastAPI(title="Resume Optimizer", version="1.0.0")
 
-from pydantic import BaseModel
-class HubJob(BaseModel):
-    title: str
-    company: str
-    url: str
+class SemanticMatchRequest(BaseModel):
+    resume_text: str
     jd_text: str
-    ats_id: str
-    score: int = 0
+
+class SynthesizeMasterRequest(BaseModel):
+    api_key: str
+    provider: str
+    resume_text: str
+
+_semantic_model = None
+
+@app.post("/api/semantic-match")
+async def semantic_match(req: SemanticMatchRequest):
+    global _semantic_model
+    try:
+        from sentence_transformers import SentenceTransformer
+        import torch
+        if _semantic_model is None:
+            # Load lazily to save memory until requested
+            _semantic_model = SentenceTransformer("all-MiniLM-L6-v2")
+            
+        embeddings = _semantic_model.encode([req.resume_text, req.jd_text], convert_to_tensor=True)
+        cos_sim = torch.nn.functional.cosine_similarity(embeddings[0].unsqueeze(0), embeddings[1].unsqueeze(0)).item()
+        
+        # Scale the score 0.0-1.0 to 0-100. Let's make it a bit more forgiving.
+        score = int(cos_sim * 100)
+        score = max(0, min(100, score))
+        
+        if score >= 75:
+            verdict = "Strong match"
+        elif score >= 55:
+            verdict = "Good fit"
+        else:
+            verdict = "Stretch role"
+            
+        return {"score": score, "verdict": verdict, "similarity": cos_sim}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.post("/api/hub/synthesize-master")
+async def synthesize_master(req: SynthesizeMasterRequest):
+    jobs = hub_db.get_jobs()
+    if not jobs:
+        return JSONResponse(status_code=400, content={"error": "No jobs in hub to synthesize."})
+        
+    if not req.resume_text:
+        return JSONResponse(status_code=400, content={"error": "No base resume provided."})
+        
+    # Aggregate JDs
+    jd_texts = [f"Job {i+1}: {j['title']} at {j['company']}\n{j['jd_text'][:1000]}..." for i, j in enumerate(jobs[:20])]
+    jds_combined = "\n\n".join(jd_texts)
+    
+    prompt = f"""You are an expert ATS resume writer.
+I have saved {len(jobs)} jobs that I am targeting. I want you to create a "Master Resume" that is highly optimized to score well across ALL of these job descriptions.
+
+Here are snippets from the Job Descriptions:
+{jds_combined}
+
+Here is my Base Resume:
+{req.resume_text}
+
+Rewrite the base resume to maximize its generic appeal and ATS keyword fit for this cluster of jobs.
+Do not invent any experience that is not in the base resume. Output a JSON object formatted exactly for the resume generator."""
+
+    client = get_client(req.provider, req.api_key)
+    try:
+        res_json = await client.generate_resume(prompt)
+        res_dict = json.loads(res_json)
+        docx_bytes = build_docx_bytes(res_dict, ats_id="generic")
+        return Response(
+            content=docx_bytes,
+            media_type=DOCX_MIME,
+            headers={
+                "Content-Disposition": "attachment; filename=\"Master_Resume.docx\""
+            }
+        )
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.post("/api/hub/add")
 async def hub_add(job: HubJob):

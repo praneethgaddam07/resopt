@@ -88,19 +88,44 @@ function chips(id, arr, cls) {
 }
 function verdictClass(pct) { return pct >= 65 ? "v-good" : pct >= 40 ? "v-mid" : "v-low"; }
 
-function computeFit() {
+async function computeFit() {
   const res = currentResume();
   const textForKeywords = (S.capture.jdBullets && S.capture.jdBullets.length > 150) ? S.capture.jdBullets : S.capture.jdText;
   const kw = RESOPT_match.keywords(textForKeywords, S.skills, 16, S.capture.title, S.capture.company);
   const fit = RESOPT_match.fit(res ? res.text : "", kw);
   S.lastFit = fit; S.lastKw = kw;
-  $("fitPct").textContent = fit.pct;
-  $("fitBar").style.width = fit.pct + "%";
-  const v = $("fitVerdict"); v.textContent = fit.verdict; v.className = "verdict " + verdictClass(fit.pct);
+  
+  let pct = fit.pct;
+  let verdict = fit.verdict;
+  let ai_badge = false;
+  
+  try {
+    const sem = await fetch("http://127.0.0.1:8000/api/semantic-match", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resume_text: res ? res.text : "", jd_text: textForKeywords })
+    });
+    if (sem.ok) {
+      const data = await sem.json();
+      if (data.score !== undefined) {
+        pct = data.score;
+        verdict = data.verdict;
+        ai_badge = true;
+      }
+    }
+  } catch (e) {
+    // fallback to keywords if desktop app offline
+  }
+  
+  $("fitPct").textContent = pct;
+  $("fitBar").style.width = pct + "%";
+  const v = $("fitVerdict"); 
+  v.innerHTML = verdict + (ai_badge ? ' <span class="badge" style="background:var(--accent);color:#fff;border:none;margin-left:8px;">AI Semantic</span>' : '');
+  v.className = "verdict " + verdictClass(pct);
   chips("coverChips", fit.covered, "ok");
   chips("gapChips", fit.missing, "gap");
 }
-function renderJob() {
+async function renderJob() {
   $("atsChip").textContent = (S.ats && S.ats.name) || "Job";
   $("jobTitle").textContent = S.capture.title || "Job posting";
   $("jobCompany").textContent = S.capture.company || "";
@@ -111,7 +136,7 @@ function renderJob() {
     else $("atsOverride").value = "generic";
   }
   fillResumeSelect();
-  computeFit();
+  await computeFit();
   $("optimizeBtn").disabled = false;
   show("job");
 }
@@ -132,7 +157,7 @@ async function scanActiveTab() {
   show("loading");
   const cap = await capture(tab.id, ats.id);
   if (!cap || cap.error || !cap.jdText || cap.jdText.length < 60) return renderNoJob(cap && cap.error);
-  S.capture = cap; renderJob();
+  S.capture = cap; await renderJob();
 }
 
 // ---------- Save to Hub ----------
