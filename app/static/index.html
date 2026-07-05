@@ -234,9 +234,9 @@
 
 <main>
   <div class="tabs">
-    <button type="button" class="tab active" data-tab="fit">Nº1 · Check fit</button>
+    <button type="button" class="tab active" data-tab="hub">Saved Jobs (Hub)</button>
+    <button type="button" class="tab" data-tab="fit" style="display:none;">Nº1 · Check fit</button>
     <button type="button" class="tab" data-tab="optimize">Nº2 · Optimize</button>
-    <button type="button" class="tab locked" data-tab="cover" id="tabCover">🔒 Nº3 · Cover letter</button>
     <button type="button" class="tab" data-tab="profile" style="margin-left:auto">Profile</button>
   </div>
   <div class="grid2">
@@ -285,6 +285,13 @@
 
     <!-- RIGHT: tab-specific panel -->
     <section class="card">
+      <!-- HUB -->
+      <div class="tabpanel" data-tab="hub" hidden>
+        <div class="step">Saved Jobs</div>
+        <p class="hint" style="margin-top:8px">Jobs you clip using the Chrome Extension appear here.</p>
+        <button type="button" id="refreshHubBtn" class="full btn-ghost" style="margin-bottom:14px">↻ Refresh Jobs</button>
+        <div id="hubList"></div>
+      </div>
       <!-- FIT CHECK -->
       <div class="tabpanel" data-tab="fit">
         <div class="step">Fit check · should you apply?</div>
@@ -329,18 +336,17 @@
         <div class="progress"><i id="bar"></i></div>
         <div class="err" id="statusErr"></div>
       </div>
-      </div><!-- /optimize panel -->
-      <!-- COVER LETTER -->
-      <div class="tabpanel" data-tab="cover" hidden>
-        <div class="step">Cover letter</div>
-        <div id="coverLock" class="lockbox" style="margin-top:10px;">
-          <div class="ic">🔒</div>
-          <div class="lh">Optimize a résumé first</div>
-          <div class="ls">Your cover letter is written from your <b>customized</b> résumé — so it matches the role exactly.</div>
-          <button type="button" class="btn-ghost" id="coverGoOpt">Go to Optimize →</button>
-          <div style="margin-top:12px;"><button type="button" class="linklike" id="coverOverride">Or write from my raw résumé instead</button></div>
-        </div>
-        <div id="coverForm" style="display:none;">
+        
+      <hr style="margin:24px 0; border:none; border-top:1px dashed var(--rule);">
+        
+      <div class="step">Optional · Cover letter</div>
+      <div id="coverLock" class="lockbox" style="margin-top:10px;">
+        <div class="ic">🔒</div>
+        <div class="lh">Optimize your résumé first</div>
+        <div class="ls">Your cover letter is written from your <b>customized</b> résumé — so it matches the role exactly.</div>
+        <div style="margin-top:12px;"><button type="button" class="linklike" id="coverOverride">Or write from my raw résumé instead</button></div>
+      </div>
+      <div id="coverForm" style="display:none;">
         <div class="hint" id="coverSource" style="margin-top:8px;color:var(--accent2);">✓ Based on your customized résumé.</div>
         <div class="row" style="margin-top:8px;">
           <div><label>Company name</label><input type="text" id="cl_company" placeholder="Acme Inc." /></div>
@@ -351,11 +357,11 @@
           <div><label>Address to (optional)</label><input type="text" id="cl_hm" placeholder="e.g. Jordan Lee, Hiring Manager" /></div>
         </div>
         <div class="hint">Uses your real experience and the JD's priorities. It names the company (your résumé never does).</div>
-        <button type="button" id="goCover" class="full">Generate cover letter →</button>
+        <button type="button" id="goCover" class="full btn-ghost" style="margin-top:8px;">Generate cover letter</button>
         <div id="coverStatus" class="hint" style="display:none;margin-top:10px">Writing your cover letter…</div>
         <div class="err" id="coverErr" style="margin-top:8px"></div>
-        </div>
       </div>
+      </div><!-- /optimize panel -->
       <!-- PROFILE -->
       <div class="tabpanel" data-tab="profile" hidden>
         <div class="step">Your profile</div>
@@ -573,6 +579,7 @@ function pills(el,items,cls){el.innerHTML=(items&&items.length)?items.map(k=>`<s
 
 function renderResult(j){
   const r=j.result, rep=r.report;
+  window._optResult = j;
   $('#results').style.display='block';
   $('#scoreNum').textContent=rep.ats_score;$('#gauge').style.setProperty('--val',rep.ats_score);
   $('#titleOut').textContent=r.job_title;$('#portalOut').textContent=R.ats||'';
@@ -777,7 +784,7 @@ async function runFit(){
   $('#goFit').disabled=true;$('#fitErr').textContent='';$('#fitStatus').style.display='block';$('#fitResult').hidden=true;
   try{const res=await fetch('/api/qualify',{method:'POST',body:fd});
     if(!res.ok)throw new Error((await res.json()).detail||'Request failed');
-    FIT=(await res.json()).result;renderFit(FIT);
+    window._fitResult=(await res.json()).result;renderFit(window._fitResult);
   }catch(err){$('#fitErr').textContent=err.message;}
   finally{$('#goFit').disabled=false;$('#fitStatus').style.display='none';}
 }
@@ -1024,6 +1031,7 @@ function setTab(t){
   $('#results').style.display=(t==='optimize'&&R)?'block':'none';
   $('#fitResult').hidden=!(t==='fit'&&FIT);
   $('#coverResult').hidden=!(t==='cover'&&COVER);
+  if (t === 'hub') { loadHubJobs(); }
   updateCoverLock();
 }
 // Cover letter is locked until a résumé has been optimized (or the user opts into raw-résumé mode).
@@ -1145,6 +1153,59 @@ try{_onboarded=!!localStorage.getItem('resopt_onboarded');}catch(e){}
 try{_hasProfile=!!localStorage.getItem('resopt_profile');}catch(e){}
 if(!_onboarded&&!_hasProfile){setTab('optimize');startOnboarding();}
 else setTab('fit');
+
+async function loadHubJobs() {
+  const refreshBtn = document.getElementById("refreshHubBtn");
+  if (refreshBtn) refreshBtn.onclick = loadHubJobs;
+  
+  const list = document.getElementById("hubList");
+  list.innerHTML = "<div class='hint'>Loading jobs...</div>";
+  try {
+    const res = await fetch("/api/hub/jobs");
+    const jobs = await res.json();
+    if (jobs.length === 0) {
+      list.innerHTML = "<div class='hint'>No jobs saved yet. Clip one using the Chrome extension!</div>";
+      return;
+    }
+    list.innerHTML = jobs.map(j => `
+      <div class="rcard" style="align-items:center; margin-bottom:10px; display:flex;">
+        <div class="rmeta" style="flex:1; cursor:pointer;" onclick="loadJobFromHub('${j.id}')">
+          <div class="rname">${esc(j.title)}</div>
+          <div class="rsub">${esc(j.company)}</div>
+          <div class="hint" style="font-size:10px; margin-top:4px">Score: ${j.score}/100 • ${new Date(j.created_at).toLocaleString()}</div>
+        </div>
+        <button type="button" class="del" style="margin-left:10px; padding:4px;" onclick="deleteHubJob(${j.id})">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d35400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </button>
+      </div>
+    `).join("");
+    window._hubJobs = jobs; // store in memory
+  } catch(e) {
+    list.innerHTML = "<div class='err'>Failed to load jobs.</div>";
+  }
+}
+
+function loadJobFromHub(jobId) {
+  const job = (window._hubJobs || []).find(j => j.id == jobId);
+  if (!job) return;
+  document.getElementById("jd").value = job.jd_text;
+  setTab("optimize"); // Skip fit check since it is on hold
+}
+
+async function deleteHubJob(jobId) {
+  if (!confirm("Are you sure you want to delete this job?")) return;
+  try {
+    await fetch("/api/hub/delete/" + jobId, { method: "DELETE" });
+    loadHubJobs();
+  } catch (e) {
+    alert("Failed to delete job.");
+  }
+}
 </script>
 </body>
 </html>

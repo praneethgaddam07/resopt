@@ -25,11 +25,50 @@ from .workflow.cover_letter import (
 from .workflow.tool_check import tool_coverage
 from .llm.client import detect_provider, PROVIDER_LABELS, get_client
 from .ratelimit import rate_limit
+from . import hub_db
+
+hub_db.init_db()
+
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
 app = FastAPI(title="Resume Optimizer", version="1.0.0")
+
+from pydantic import BaseModel
+class HubJob(BaseModel):
+    title: str
+    company: str
+    url: str
+    jd_text: str
+    ats_id: str
+    score: int = 0
+
+@app.post("/api/hub/add")
+async def hub_add(job: HubJob):
+    job_id = hub_db.add_job(
+        title=job.title,
+        company=job.company,
+        url=job.url,
+        jd_text=job.jd_text,
+        ats_id=job.ats_id,
+        score=job.score
+    )
+    return {"status": "ok", "job_id": job_id}
+
+@app.get("/api/hub/jobs")
+async def get_hub_jobs():
+    return hub_db.get_jobs()
+
+@app.delete("/api/hub/delete/{job_id}")
+async def delete_hub_job(job_id: int):
+    hub_db.delete_job(job_id)
+    return {"status": "ok"}
+
+@app.post("/api/hub/optimize/{job_id}")
+async def hub_mark_optimized(job_id: int):
+    hub_db.mark_optimized(job_id)
+    return {"status": "ok"}
 
 # --- Input-size guards: cap the memory / DoS window on the file + text endpoints ---
 MAX_UPLOAD_BYTES = int(os.environ.get("RESOPT_MAX_UPLOAD_BYTES", str(5 * 1024 * 1024)))    # 5 MB/file

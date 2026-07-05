@@ -33,6 +33,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--verm)}
 .cta{width:100%;background:var(--verm);color:#fff;border:none;border-radius:10px;padding:12px;
   font-size:14px;font-weight:600;cursor:pointer;margin-top:4px}
 .cta:disabled{opacity:.5;cursor:default}
+.cta.ok{background:var(--green);color:#fff}
 .ghost{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:10px;
   padding:9px 10px;font-size:13px;cursor:pointer;flex:1}
 .row{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:7px 0;color:#3A3A34}
