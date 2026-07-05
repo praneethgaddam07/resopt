@@ -170,4 +170,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     import sys
+    if "--native" in sys.argv:
+        from app.native_messaging import run_native_messaging
+        raise SystemExit(run_native_messaging() or 0)
     raise SystemExit(selftest() if "--selftest" in sys.argv else (main() or 0))

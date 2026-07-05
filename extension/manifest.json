@@ -3,7 +3,7 @@
   "name": "RESOPT — optimize your résumé in place",
   "version": "1.0.0",
   "description": "On a job posting, RESOPT detects the ATS, captures the description, and tailors your résumé — with the engine running locally on your machine.",
-  "permissions": ["sidePanel", "activeTab", "storage", "scripting"],
+  "permissions": ["sidePanel", "activeTab", "storage", "scripting", "nativeMessaging"],
   "host_permissions": [
     "http://127.0.0.1/*",
     "https://raw.githubusercontent.com/*",

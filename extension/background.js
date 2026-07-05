@@ -34,3 +34,21 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   try { const t = await chrome.tabs.get(tabId); badge(tabId, t.url); } catch (e) {}
 });
+
+// Native Messaging proxy to forward requests from the side panel to the native host
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === "NATIVE_MESSAGING") {
+    try {
+      chrome.runtime.sendNativeMessage("com.praneeth.resopt", request.payload, (response) => {
+        if (chrome.runtime.lastError) {
+          sendResponse({ error: chrome.runtime.lastError.message });
+        } else {
+          sendResponse({ data: response });
+        }
+      });
+    } catch (e) {
+      sendResponse({ error: e.message });
+    }
+    return true; // Keep message channel open for async response
+  }
+});

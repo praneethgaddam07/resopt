@@ -25,6 +25,20 @@ const store = {
 };
 async function getJSON(url) { try { return await (await fetch(url)).json(); } catch (e) { return null; } }
 
+async function nativeFetch(endpoint, payload) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({
+      type: "NATIVE_MESSAGING",
+      payload: { endpoint, payload }
+    }, (response) => {
+      if (chrome.runtime.lastError) return reject(new Error(chrome.runtime.lastError.message));
+      if (!response || response.error) return reject(new Error(response?.error || "Unknown error"));
+      if (response.data && response.data.error) return reject(new Error(response.data.error));
+      resolve(response.data);
+    });
+  });
+}
+
 async function activeTab() { return (await chrome.tabs.query({ active: true, currentWindow: true }))[0]; }
 async function capture(tabId, atsId, retries = 3) {
   const sel = (S.selectors.ats && S.selectors.ats[atsId]) || {};
@@ -100,18 +114,11 @@ async function computeFit() {
   let ai_badge = false;
   
   try {
-    const sem = await fetch("http://127.0.0.1:8000/api/semantic-match", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ resume_text: res ? res.text : "", jd_text: textForKeywords })
-    });
-    if (sem.ok) {
-      const data = await sem.json();
-      if (data.score !== undefined) {
-        pct = data.score;
-        verdict = data.verdict;
-        ai_badge = true;
-      }
+    const data = await nativeFetch("/api/semantic-match", { resume_text: res ? res.text : "", jd_text: textForKeywords });
+    if (data && data.score !== undefined) {
+      pct = data.score;
+      verdict = data.verdict;
+      ai_badge = true;
     }
   } catch (e) {
     // fallback to keywords if desktop app offline
@@ -179,12 +186,7 @@ async function saveToHub() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/hub/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error("Backend failed");
+    await nativeFetch("/api/hub/add", payload);
     btn.textContent = "✅ Saved to Hub!";
     btn.style.background = "#10b981"; // green
     btn.style.color = "#fff";

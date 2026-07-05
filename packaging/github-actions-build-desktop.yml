@@ -40,7 +40,10 @@ jobs:
       - name: Smoke test (bundled server boots)
         run: "'dist/RESOPT.app/Contents/MacOS/RESOPT' --selftest"
       - name: Zip .app
-        run: cd dist && zip -qr "RESOPT-macOS.zip" "RESOPT.app"
+        run: |
+          cd dist
+          cp ../packaging/install_mac.sh .
+          zip -qr "RESOPT-macOS.zip" "RESOPT.app" "install_mac.sh"
       - uses: actions/upload-artifact@v4
         with:
           name: RESOPT-macOS
@@ -75,7 +78,9 @@ jobs:
       - name: Smoke test (bundled server boots)
         run: dist\RESOPT\RESOPT.exe --selftest
       - name: Zip Windows build
-        run: Compress-Archive -Path dist\RESOPT -DestinationPath dist\RESOPT-Windows.zip
+        run: |
+          Copy-Item "packaging\install_windows.bat" -Destination "dist\RESOPT\install_windows.bat"
+          Compress-Archive -Path dist\RESOPT -DestinationPath dist\RESOPT-Windows.zip
       - uses: actions/upload-artifact@v4
         with:
           name: RESOPT-Windows
