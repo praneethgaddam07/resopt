@@ -17,7 +17,7 @@ live ATS match score, and a clean single-column `.docx`.
 - 🎯 **9 ATS portals** (Workday, Taleo, ADP, Greenhouse, Lever, iCIMS, Paycor,
   SmartRecruiters, BambooHR) with per-portal formatting rules + a pre-submit checklist.
 
-There are three ways to use it — pick one:
+There are two ways to use it — pick one:
 
 ---
 
@@ -38,34 +38,7 @@ Bring your own AI key — **Anthropic, OpenAI, Google Gemini, Groq, or Perplexit
 pasted in the app, kept for the session only. The app links you to each provider's
 key page (Gemini & Groq have free tiers; Perplexity Pro includes monthly API credits).
 
-## 2 · Use the AI you already have (MCP connector — no API key)
-
-If you have **Claude Pro** or **Perplexity Pro**, your own subscription does the
-writing and RESOPT contributes the deterministic engine (ATS scoring, truthful tool
-mapping, integrity checks, the `.docx` builder). Nothing to install, nothing to pay:
-
-> ### `https://resopt-mcp.onrender.com/mcp`
-
-- **Claude** (web or Desktop): Settings → **Connectors** → **Add custom connector** → paste the URL.
-- **Perplexity** (Pro/Max): Settings → **Connectors** → **Add custom connector** → paste the URL.
-
-Then paste your résumé + the job description into the chat and say
-*“Optimize my résumé for this job.”* You'll get the `.docx` and your ATS score.
-
-**Full step-by-step guide (shareable): [docs/CONNECT.md](docs/CONNECT.md).**
-
-Prefer not to trust our server? **Self-host it** — see [CONNECTOR.md](CONNECTOR.md),
-or run it locally inside Claude Desktop (stdio):
-
-```jsonc
-// claude_desktop_config.json
-{ "mcpServers": { "resopt": {
-    "command": "python", "args": ["/path/to/resume-optimizer/mcp_server.py"] } } }
-```
-
-(First: `pip install -r requirements-mcp.txt`.)
-
-## 3 · Run the web app from source
+## 2 · Run the web app from source
 
 ```bash
 git clone https://github.com/praneethgaddam07/resume-optimizer.git
@@ -85,8 +58,7 @@ real bullets into the JD's language; a two-tier model router keeps the mechanica
 steps on the cheap model) → **integrity guardrail** (deterministic: no unbacked
 numbers, no AI-tell words) → per-portal ATS formatting → match-score report. The
 fit check's fixable gaps feed straight into the optimizer; borderline tools are only
-used after **you** confirm them. Deploy details: [DEPLOY.md](DEPLOY.md) ·
-connector details: [CONNECTOR.md](CONNECTOR.md).
+used after **you** confirm them.
 
 ## License
 
