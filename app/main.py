@@ -35,6 +35,16 @@ DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.docu
 
 app = FastAPI(title="Resume Optimizer", version="1.0.0")
 
+from pydantic import BaseModel
+
+class HubJob(BaseModel):
+    title: str
+    company: str
+    url: str
+    jd_text: str
+    ats_id: str
+    score: int = 0
+
 class SemanticMatchRequest(BaseModel):
     resume_text: str
     jd_text: str

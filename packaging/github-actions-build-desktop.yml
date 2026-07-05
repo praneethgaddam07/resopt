@@ -65,7 +65,7 @@ jobs:
       - run: python packaging/make_icon.py
       - name: Build RESOPT.exe
         run: >
-          pyinstaller --noconfirm --windowed --onefile --name "RESOPT"
+          pyinstaller --noconfirm --windowed --name "RESOPT"
           --icon packaging/assets/icon.ico
           --add-data "app/static;app/static"
           --add-data "app/workflow/master_taxonomy.json;app/workflow"
@@ -73,11 +73,13 @@ jobs:
           --collect-all google.generativeai --collect-all webview
           --collect-submodules app desktop.py
       - name: Smoke test (bundled server boots)
-        run: dist\RESOPT.exe --selftest
+        run: dist\RESOPT\RESOPT.exe --selftest
+      - name: Zip Windows build
+        run: Compress-Archive -Path dist\RESOPT -DestinationPath dist\RESOPT-Windows.zip
       - uses: actions/upload-artifact@v4
         with:
           name: RESOPT-Windows
-          path: dist/RESOPT.exe
+          path: dist/RESOPT-Windows.zip
       - name: Publish to public resopt repo
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
@@ -85,4 +87,4 @@ jobs:
           repository: praneethgaddam07/resopt
           token: ${{ secrets.RELEASE_TOKEN }}
           tag_name: ${{ github.ref_name }}
-          files: dist/RESOPT.exe
+          files: dist/RESOPT-Windows.zip

@@ -12,7 +12,7 @@ python packaging\make_icon.py
 if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
 
-pyinstaller --noconfirm --windowed --onefile --name "RESOPT" ^
+pyinstaller --noconfirm --windowed --name "RESOPT" ^
   --icon packaging/assets/icon.ico ^
   --add-data "app/static;app/static" ^
   --add-data "app/workflow/master_taxonomy.json;app/workflow" ^
