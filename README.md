@@ -51,6 +51,18 @@ pipeline with placeholder content (no key, no cost) for development. Tests: `pyt
 
 ---
 
+## 3 · Install the Chrome Extension (Required)
+
+To easily send job descriptions to the app, you need the companion Chrome extension.
+
+1. Download the [**Source code (zip)**](../../archive/refs/heads/main.zip) and extract it.
+2. Open Google Chrome and go to `chrome://extensions/`
+3. Turn on **Developer mode** (toggle in the top right corner).
+4. Click **Load unpacked** in the top left.
+5. Select the `extension/` folder from the extracted source code.
+
+---
+
 ## How it works (short version)
 
 Fit check (honest verdict + which gaps optimization can fix) → tailor (rephrase your
