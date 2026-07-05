@@ -26,12 +26,12 @@ There are two ways to use it — pick one:
 | Platform | Download |
 |----------|----------|
 | macOS (Apple Silicon) | [**RESOPT-macOS.zip**](../../releases/latest/download/RESOPT-macOS.zip) |
-| Windows | [**RESOPT.exe**](../../releases/latest/download/RESOPT.exe) |
+| Windows | [**RESOPT-Windows.zip**](../../releases/latest/download/RESOPT-Windows.zip) |
 
 **macOS one-liner** (installs to Applications and clears the unsigned-app warning):
 
 ```bash
-curl -L -o /tmp/RESOPT.zip https://github.com/praneethgaddam07/resume-optimizer/releases/latest/download/RESOPT-macOS.zip && unzip -o /tmp/RESOPT.zip -d /Applications && open /Applications/RESOPT.app
+curl -L -o /tmp/RESOPT.zip https://github.com/praneethgaddam07/resopt/releases/latest/download/RESOPT-macOS.zip && unzip -o /tmp/RESOPT.zip -d /Applications && xattr -cr /Applications/RESOPT.app && open /Applications/RESOPT.app
 ```
 
 Bring your own AI key — **Anthropic, OpenAI, Google Gemini, Groq, or Perplexity** —
@@ -41,8 +41,8 @@ key page (Gemini & Groq have free tiers; Perplexity Pro includes monthly API cre
 ## 2 · Run the web app from source
 
 ```bash
-git clone https://github.com/praneethgaddam07/resume-optimizer.git
-cd resume-optimizer
+git clone https://github.com/praneethgaddam07/resopt.git
+cd resopt
 ./run_local.sh        # Windows: .\run_local.bat
 ```
 
