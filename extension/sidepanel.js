@@ -233,9 +233,25 @@ function wire() {
     e.target.value = "";
     $("resumeMsg").textContent = "Reading " + f.name + "…";
     try {
-      const text = await RESOPT_extract.extractText(f);
-      if (!text || text.length < 30) throw new Error("No readable text found in that file.");
-      await addResume($("resumeLabel").value || f.name.replace(/\.[^.]+$/, ""), text);
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const b64data = reader.result.split(',')[1];
+          const res = await nativeFetch("/api/extract", {
+            filename: f.name,
+            b64data: b64data
+          });
+          if (res.error) throw new Error(res.error);
+          if (!res.text || res.text.length < 30) throw new Error("No readable text found in that file.");
+          await addResume($("resumeLabel").value || f.name.replace(/\.[^.]+$/, ""), res.text);
+        } catch (err) {
+          $("resumeMsg").textContent = "Couldn't read that file: " + (err.message || err);
+        }
+      };
+      reader.onerror = () => {
+        $("resumeMsg").textContent = "Couldn't read that file: FileReader error";
+      };
+      reader.readAsDataURL(f);
     } catch (err) { $("resumeMsg").textContent = "Couldn't read that file: " + (err.message || err); }
   });
   $("setupDoneBtn").addEventListener("click", async () => {

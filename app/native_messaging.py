@@ -5,6 +5,8 @@ import asyncio
 import traceback
 
 from app.main import semantic_match, hub_add, SemanticMatchRequest, HubJob
+from app.workflow.extract import extract_text_from_file
+import base64
 
 async def handle_message(msg):
     endpoint = msg.get("endpoint")
@@ -22,6 +24,19 @@ async def handle_message(msg):
         if hasattr(res, "body"):
             return json.loads(res.body)
         return res
+    elif endpoint == "/api/extract":
+        filename = payload.get("filename", "")
+        b64data = payload.get("b64data", "")
+        if not b64data:
+            return {"error": "No file provided"}
+        try:
+            raw_bytes = base64.b64decode(b64data)
+            text = extract_text_from_file(filename, raw_bytes)
+            if not text or not text.strip():
+                return {"error": "Couldn't read any text from that file."}
+            return {"filename": filename, "text": text}
+        except Exception as e:
+            return {"error": f"Extraction failed: {str(e)}"}
     else:
         return {"error": f"Unknown endpoint: {endpoint}"}
 
