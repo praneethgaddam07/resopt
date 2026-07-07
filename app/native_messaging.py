@@ -59,7 +59,7 @@ if __name__ == "__main__":
 def setup_native_messaging_host():
     """Automates the installation of the Chrome Native Messaging Host manifest."""
     import platform
-    ext_id = "bbgacjcfjkmfcacimbkhelodlnegboej"
+    ext_id = "ajghgjkgdfmijbhgicclkfmebgnjdagi"
     
     if sys.platform == "darwin":
         host_dir = os.path.expanduser("~/.resopt")
