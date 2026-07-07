@@ -7,19 +7,20 @@
       return skills.slice(0, limit || 16);
     },
     fit: function(resumeText, kw) {
-      if (!kw || kw.length === 0) return { score: 0, cover: [], gap: [] };
+      if (!kw || kw.length === 0) return { pct: 0, verdict: "Low match", covered: [], missing: [] };
       const resumeLower = (resumeText || "").toLowerCase();
-      let cover = [];
-      let gap = [];
+      let covered = [];
+      let missing = [];
       kw.forEach(k => {
         if (resumeLower.includes(k.toLowerCase())) {
-          cover.push(k);
+          covered.push(k);
         } else {
-          gap.push(k);
+          missing.push(k);
         }
       });
-      const score = Math.round((cover.length / kw.length) * 100);
-      return { score, cover, gap };
+      const pct = Math.round((covered.length / kw.length) * 100);
+      let verdict = pct >= 65 ? "Good match" : pct >= 40 ? "Medium match" : "Low match";
+      return { pct, verdict, covered, missing };
     }
   };
 })(typeof window !== 'undefined' ? window : this);
