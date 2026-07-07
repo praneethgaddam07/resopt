@@ -7,6 +7,16 @@ from __future__ import annotations
 
 import json
 import os
+import sys
+
+# --- MONKEY PATCH FOR PYINSTALLER + TRANSFORMERS ---
+original_scandir = os.scandir
+def patched_scandir(path=None):
+    if path and isinstance(path, str) and path.endswith('__init__.pyc'):
+        path = os.path.dirname(path)
+    return original_scandir(path)
+os.scandir = patched_scandir
+# ---------------------------------------------------
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request, Depends
 from fastapi.responses import Response, HTMLResponse, JSONResponse
