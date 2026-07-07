@@ -54,6 +54,23 @@ class SynthesizeMasterRequest(BaseModel):
     provider: str
     resume_text: str
 
+class ExtractRequest(BaseModel):
+    filename: str
+    b64data: str
+
+@app.post("/api/extract")
+async def extract_b64(req: ExtractRequest):
+    import base64
+    try:
+        raw_bytes = base64.b64decode(req.b64data)
+        from .workflow.scoring import extract_text_from_file
+        text = extract_text_from_file(req.filename, raw_bytes)
+        if not text.strip():
+            return JSONResponse(status_code=400, content={"error": "Couldn't read any text from that file."})
+        return {"filename": req.filename, "text": text}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
 _semantic_model = None
 
 @app.post("/api/semantic-match")
