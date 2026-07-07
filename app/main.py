@@ -62,6 +62,7 @@ async def semantic_match(req: SemanticMatchRequest):
     try:
         from sentence_transformers import SentenceTransformer
         import torch
+        from .workflow.scoring import extract_jd_keywords
         if _semantic_model is None:
             # Load lazily to save memory until requested
             _semantic_model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -80,8 +81,14 @@ async def semantic_match(req: SemanticMatchRequest):
         else:
             verdict = "Stretch role"
             
-        return {"score": score, "verdict": verdict, "similarity": cos_sim}
+        keywords = extract_jd_keywords(req.jd_text, limit=10)
+            
+        return {"score": score, "verdict": verdict, "similarity": cos_sim, "keywords": keywords}
     except Exception as e:
+        import traceback
+        import os
+        with open(os.path.expanduser('~/Desktop/resopt_err.log'), 'w') as f:
+            f.write(traceback.format_exc())
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.post("/api/hub/synthesize-master")
