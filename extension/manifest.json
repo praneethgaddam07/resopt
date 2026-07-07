@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "RESOPT — optimize your résumé in place",
   "version": "1.0.0",
-  "description": "On a job posting, RESOPT detects the ATS, captures the description, and tailors your résumé — with the engine running locally on your machine.",
+  "description": "RESOPT detects the ATS and tailors your résumé to the job description using a local AI engine on your machine.",
   "permissions": ["sidePanel", "activeTab", "storage", "scripting", "nativeMessaging"],
   "host_permissions": [
     "http://127.0.0.1/*",
