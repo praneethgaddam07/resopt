@@ -1,44 +1,25 @@
 import sys
 import struct
 import json
-import asyncio
 import traceback
+import urllib.request
+import os
 
-from app.main import semantic_match, hub_add, SemanticMatchRequest, HubJob
-from app.workflow.extract import extract_text_from_file
-import base64
-
-async def handle_message(msg):
+def handle_message(msg):
     endpoint = msg.get("endpoint")
     payload = msg.get("payload", {})
     
-    if endpoint == "/api/semantic-match":
-        req = SemanticMatchRequest(**payload)
-        res = await semantic_match(req)
-        if hasattr(res, "body"):
-            return json.loads(res.body)
-        return res
-    elif endpoint == "/api/hub/add":
-        req = HubJob(**payload)
-        res = await hub_add(req)
-        if hasattr(res, "body"):
-            return json.loads(res.body)
-        return res
-    elif endpoint == "/api/extract":
-        filename = payload.get("filename", "")
-        b64data = payload.get("b64data", "")
-        if not b64data:
-            return {"error": "No file provided"}
-        try:
-            raw_bytes = base64.b64decode(b64data)
-            text = extract_text_from_file(filename, raw_bytes)
-            if not text or not text.strip():
-                return {"error": "Couldn't read any text from that file."}
-            return {"filename": filename, "text": text}
-        except Exception as e:
-            return {"error": f"Extraction failed: {str(e)}"}
-    else:
-        return {"error": f"Unknown endpoint: {endpoint}"}
+    # Forward the message via HTTP to the running RESOPT app server
+    url = f"http://127.0.0.1:47615{endpoint}"
+    data = json.dumps(payload).encode('utf-8')
+    req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+    
+    try:
+        with urllib.request.urlopen(req, timeout=10) as response:
+            res_body = response.read().decode('utf-8')
+            return json.loads(res_body)
+    except Exception as e:
+        return {"error": f"Native proxy HTTP error: {str(e)}"}
 
 def read_message():
     text_length_bytes = sys.stdin.buffer.read(4)
@@ -54,7 +35,7 @@ def send_message(msg):
     sys.stdout.buffer.write(text)
     sys.stdout.buffer.flush()
 
-async def run_loop():
+def run_loop():
     while True:
         try:
             msg = read_message()
@@ -62,7 +43,7 @@ async def run_loop():
                 break
             
             try:
-                result = await handle_message(msg)
+                result = handle_message(msg)
                 send_message(result)
             except Exception as e:
                 send_message({"error": str(e), "trace": traceback.format_exc()})
@@ -70,14 +51,14 @@ async def run_loop():
             break
 
 def run_native_messaging():
-    asyncio.run(run_loop())
+    run_loop()
 
 if __name__ == "__main__":
     run_native_messaging()
 
 def setup_native_messaging_host():
     """Automates the installation of the Chrome Native Messaging Host manifest."""
-    import os, platform
+    import platform
     ext_id = "bbgacjcfjkmfcacimbkhelodlnegboej"
     
     if sys.platform == "darwin":
@@ -103,9 +84,40 @@ def setup_native_messaging_host():
             f.write("@echo off\n")
             f.write(f'"{exe_path}" --native\n')
     else:
+        # On macOS, using the raw binary causes the Dock icon to bounce.
+        # Instead of calling the PyInstaller binary, we write a pure lightweight Python proxy script.
+        proxy_script = """#!/usr/bin/env python3
+import sys, struct, json, urllib.request, traceback
+
+def handle_message(msg):
+    endpoint = msg.get("endpoint")
+    payload = msg.get("payload", {})
+    url = f"http://127.0.0.1:47615{endpoint}"
+    data = json.dumps(payload).encode('utf-8')
+    req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as response:
+            return json.loads(response.read().decode('utf-8'))
+    except Exception as e:
+        return {"error": str(e)}
+
+def main():
+    while True:
+        length_bytes = sys.stdin.buffer.read(4)
+        if not length_bytes: break
+        length = struct.unpack('i', length_bytes)[0]
+        text = sys.stdin.buffer.read(length).decode('utf-8')
+        result = handle_message(json.loads(text))
+        out_text = json.dumps(result).encode('utf-8')
+        sys.stdout.buffer.write(struct.pack('i', len(out_text)))
+        sys.stdout.buffer.write(out_text)
+        sys.stdout.buffer.flush()
+
+if __name__ == '__main__':
+    main()
+"""
         with open(wrapper_path, "w") as f:
-            f.write("#!/bin/bash\n")
-            f.write(f'"{exe_path}" --native\n')
+            f.write(proxy_script)
         os.chmod(wrapper_path, 0o755)
 
     manifest = {
