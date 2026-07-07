@@ -21,6 +21,35 @@ pyinstaller --noconfirm --windowed --name "RESOPT" ^
   --collect-all openai ^
   --collect-all google.generativeai ^
   --collect-all webview ^
+  --collect-all sentence_transformers ^
+  --collect-all transformers ^
+  --collect-all huggingface_hub ^
+  --collect-all tokenizers ^
+  --collect-all tqdm ^
+  --collect-all safetensors ^
+  --collect-all regex ^
+  --collect-all pypdf ^
+  --collect-all docx ^
+  --collect-all numpy ^
+  --collect-all scipy ^
+  --collect-all sklearn ^
+  --collect-all torch ^
+  --copy-metadata packaging ^
+  --copy-metadata tqdm ^
+  --copy-metadata regex ^
+  --copy-metadata requests ^
+  --copy-metadata filelock ^
+  --copy-metadata numpy ^
+  --copy-metadata tokenizers ^
+  --copy-metadata huggingface-hub ^
+  --copy-metadata safetensors ^
+  --copy-metadata pyyaml ^
+  --copy-metadata fsspec ^
+  --copy-metadata scipy ^
+  --copy-metadata torch ^
+  --copy-metadata pillow ^
+  --copy-metadata sentence-transformers ^
+  --copy-metadata transformers ^
   --collect-submodules app ^
   desktop.py
 
