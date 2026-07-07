@@ -55,13 +55,10 @@ pipeline with placeholder content (no key, no cost) for development. Tests: `pyt
 
 To easily send job descriptions to the app, you need the companion Chrome extension.
 
-1. Install the **RESOPT Chrome Extension** directly from the [Chrome Web Store](https://chromewebstore.google.com/detail/resopt-optimize-your-re/bbgacjcfjkmfcacimbkhelodlnegboej).
-2. The extension needs to talk to the local RESOPT app securely using Native Messaging. Run the native messaging script to connect them:
-   - **macOS**: Open Terminal and run `./packaging/install_mac.sh`
-   - **Windows**: Double-click `install_windows.bat` (if downloaded via release zip) or run `packaging\install_windows.bat`.
-   
-   *When prompted for your Extension ID, paste:* `bbgacjcfjkmfcacimbkhelodlnegboej`
-3. Restart your browser! The extension can now seamlessly talk to the desktop app securely without HTTP.
+1. Download and open the **RESOPT desktop app** (it will automatically configure itself).
+2. Install the **RESOPT Chrome Extension** from the [Chrome Web Store](https://chromewebstore.google.com/detail/resopt-optimize-your-re/bbgacjcfjkmfcacimbkhelodlnegboej).
+
+That's it! The extension will seamlessly talk to the desktop app securely without HTTP.
 
 ---
 

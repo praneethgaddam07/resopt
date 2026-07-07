@@ -6,13 +6,10 @@ desktop app (`127.0.0.1:47615`). There is no RESOPT server in the path; nothing 
 your machine. See the full spec in [`../docs/extension/`](../docs/extension/README.md).
 
 ## Installation (End Users)
-1. Install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/resopt-optimize-your-re/bbgacjcfjkmfcacimbkhelodlnegboej).
-2. The extension uses Native Messaging to communicate with the local RESOPT app directly (instead of CORS/HTTP). Run the native messaging host installer from the project root:
-   - **macOS**: Open Terminal and run `./packaging/install_mac.sh`
-   - **Windows**: Run `packaging\install_windows.bat`
-   
-   *When prompted, paste your Extension ID:* `bbgacjcfjkmfcacimbkhelodlnegboej`
-3. Restart your browser to apply the permissions.
+1. Download and open the **RESOPT desktop app**. It will automatically configure the Native Messaging Host for you.
+2. Install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/resopt-optimize-your-re/bbgacjcfjkmfcacimbkhelodlnegboej).
+
+*No manual setup or scripts required!*
 
 ## Load it (unpacked, for development)
 1. Chrome → `chrome://extensions` → enable **Developer mode** → **Load unpacked** → select this `extension/` folder.

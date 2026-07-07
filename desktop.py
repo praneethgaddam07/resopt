@@ -153,6 +153,10 @@ class _Api:
 
 def main() -> None:
     import webview  # imported lazily so the server logic is testable without a GUI
+    from app.native_messaging import setup_native_messaging_host
+
+    # Automatically install the native messaging host manifest for the Chrome extension
+    setup_native_messaging_host()
 
     try:
         webview.settings["ALLOW_DOWNLOADS"] = True
