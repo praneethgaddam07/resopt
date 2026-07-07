@@ -125,7 +125,10 @@ if __name__ == '__main__':
         "description": "RESOPT Native Messaging Host",
         "path": wrapper_path,
         "type": "stdio",
-        "allowed_origins": [f"chrome-extension://{ext_id}/"]
+        "allowed_origins": [
+            f"chrome-extension://{ext_id}/",
+            "chrome-extension://ldeknffakfmipaaddgkkgblldmdofhea/"
+        ]
     }
     
     with open(json_path, "w") as f:
