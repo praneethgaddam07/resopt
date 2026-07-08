@@ -127,6 +127,7 @@ if __name__ == '__main__':
         "type": "stdio",
         "allowed_origins": [
             f"chrome-extension://{ext_id}/",
+            "chrome-extension://bbgacjcfjkmfcacimbkhelodlnegboej/",
             "chrome-extension://ldeknffakfmipaaddgkkgblldmdofhea/"
         ]
     }
