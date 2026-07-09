@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "RESOPT — optimize your résumé in place",
   "version": "1.1.0",
-  "description": "RESOPT reads the job description on any tab, scores your résumé fit, and saves jobs to your on-device Hub — using a local AI engine on your machine.",
+  "description": "Read the job description on any tab, score your résumé fit, and save jobs to your on-device Hub. Runs on a local AI engine.",
   "permissions": ["sidePanel", "activeTab", "storage", "scripting", "nativeMessaging"],
   "host_permissions": [
     "http://127.0.0.1/*",
