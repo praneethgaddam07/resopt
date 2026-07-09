@@ -43,7 +43,7 @@ hub_db.init_db()
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
-app = FastAPI(title="Resume Optimizer", version="1.0.0")
+app = FastAPI(title="Resume Optimizer", version=__version__)
 
 from pydantic import BaseModel
 
@@ -67,6 +67,13 @@ class SynthesizeMasterRequest(BaseModel):
 class ExtractRequest(BaseModel):
     filename: str
     b64data: str
+
+class AppliedRequest(BaseModel):
+    applied: bool = True
+
+class SaveResumeRequest(BaseModel):
+    docx_b64: str
+    label: str = "Résumé"
 
 @app.post("/api/extract")
 async def extract_b64(req: ExtractRequest):
@@ -170,11 +177,13 @@ async def hub_add(job: HubJob):
     )
     return {"status": "ok", "job_id": job_id}
 
-@app.get("/api/hub/jobs")
+# GET + POST: the browser extension reaches the local engine through a native-messaging
+# proxy that can only issue POSTs, so read endpoints must also answer POST.
+@app.api_route("/api/hub/jobs", methods=["GET", "POST"])
 async def get_hub_jobs():
     return hub_db.get_jobs()
 
-@app.delete("/api/hub/delete/{job_id}")
+@app.api_route("/api/hub/delete/{job_id}", methods=["DELETE", "POST"])
 async def delete_hub_job(job_id: int):
     hub_db.delete_job(job_id)
     return {"status": "ok"}
@@ -183,6 +192,62 @@ async def delete_hub_job(job_id: int):
 async def hub_mark_optimized(job_id: int):
     hub_db.mark_optimized(job_id)
     return {"status": "ok"}
+
+@app.post("/api/hub/applied/{job_id}")
+async def hub_set_applied(job_id: int, req: AppliedRequest):
+    hub_db.set_applied(job_id, req.applied)
+    return {"status": "ok", "applied": req.applied}
+
+
+def _hub_resume_dir() -> str:
+    """On-device folder where customized résumés are saved, next to the user's docs."""
+    d = os.path.join(os.path.expanduser("~"), "Documents", "RESOPT")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+@app.post("/api/hub/save-resume/{job_id}")
+async def hub_save_resume(job_id: int, req: SaveResumeRequest):
+    """Write the résumé the user customized for this job to their own machine and link
+    it to the Hub entry. Nothing leaves the device — the file lands in ~/Documents/RESOPT."""
+    import base64
+    job = hub_db.get_job(job_id)
+    if job is None:
+        return JSONResponse(status_code=404, content={"error": "Job not found."})
+    try:
+        raw = base64.b64decode(req.docx_b64)
+    except Exception:
+        return JSONResponse(status_code=400, content={"error": "Bad résumé data."})
+    fname = f"{_safe(job.get('lastname') or req.label, 'Resume')}_{_safe(job.get('company'), 'Company')}.docx"
+    dest = os.path.join(_hub_resume_dir(), fname)
+    with open(dest, "wb") as fh:
+        fh.write(raw)
+    hub_db.set_resume(job_id, dest, req.label)
+    return {"status": "ok", "path": dest, "label": req.label}
+
+
+@app.post("/api/hub/open-resume/{job_id}")
+async def hub_open_resume(job_id: int):
+    """Reveal/open the saved résumé for a job in the OS default app. Guarded to the
+    RESOPT folder so a tampered DB row can't open arbitrary files."""
+    import subprocess
+    job = hub_db.get_job(job_id)
+    if job is None or not job.get("resume_path"):
+        return JSONResponse(status_code=404, content={"error": "No résumé saved for this job."})
+    path = os.path.realpath(job["resume_path"])
+    safe_root = os.path.realpath(_hub_resume_dir())
+    if not path.startswith(safe_root + os.sep) or not os.path.exists(path):
+        return JSONResponse(status_code=400, content={"error": "Résumé file is missing or outside the RESOPT folder."})
+    try:
+        if sys.platform == "darwin":
+            subprocess.Popen(["open", "-R", path])
+        elif os.name == "nt":
+            os.startfile(os.path.dirname(path))  # noqa: reveal in Explorer
+        else:
+            subprocess.Popen(["xdg-open", os.path.dirname(path)])
+        return {"status": "ok", "path": path}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 # --- Input-size guards: cap the memory / DoS window on the file + text endpoints ---
 MAX_UPLOAD_BYTES = int(os.environ.get("RESOPT_MAX_UPLOAD_BYTES", str(5 * 1024 * 1024)))    # 5 MB/file
@@ -243,14 +308,15 @@ def health():
             "retention": "none"}
 
 
-@app.get("/api/ping")
+@app.api_route("/api/ping", methods=["GET", "POST"])
 def ping():
     """Liveness probe for the browser extension — is the local engine running?
-    The side panel calls this on open to pick State A (engine live) vs State C."""
+    The side panel calls this on open to light the 'engine on' indicator (accurate
+    engine score) vs the grey 'quick estimate' fallback."""
     return {"ok": True, "app": "resopt", "version": __version__}
 
 
-@app.get("/api/ats")
+@app.api_route("/api/ats", methods=["GET", "POST"])
 def ats_portals():
     return {"portals": list_portals()}
 

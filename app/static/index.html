@@ -731,7 +731,16 @@ async function downloadResume(fmt){
     const res=await fetch('/api/render',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ats:R.ats,fmt,company:$('#company').value,lastname:$('#lastname').value,section_order:R.section_order,contact:R.contact,data:R.data,style:STYLE})});
     if(!res.ok){alert('Download failed ('+res.status+'). Please try again.');return;}
-    await saveBlob(await res.blob(),fname);
+    const blob=await res.blob();
+    await saveBlob(blob,fname);
+    // Arrived from a Hub job → also file this résumé in the on-device RESOPT folder and link it to the job.
+    if(window.__HUB_JOB_ID&&fmt==='docx'){
+      try{
+        const b64=await new Promise(r=>{const fr=new FileReader();fr.onloadend=()=>r(fr.result.split(',')[1]);fr.readAsDataURL(blob);});
+        await fetch('/api/hub/save-resume/'+window.__HUB_JOB_ID,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({docx_b64:b64,label:($('#lastname').value||'Résumé')})});
+      }catch(e){/* linking is best-effort */}
+    }
   }catch(err){alert('Download error: '+(err&&err.message||err));}
 }
 $('#dlLink').addEventListener('click',e=>{e.preventDefault();downloadResume('docx');});
@@ -1049,6 +1058,24 @@ function updateCoverLock(){
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 $('#fitToOpt').addEventListener('click',()=>{setTab('optimize');window.scrollTo({top:0,behavior:'smooth'});});
+
+// Hand-off from the browser extension's Hub: /?hub_job=<id> prefills the job and jumps
+// to Optimize. After the user downloads the .docx it's filed back into their Hub folder.
+(async function hubHandoff(){
+  const id=new URLSearchParams(location.search).get('hub_job');
+  if(!id)return;
+  try{
+    const jobs=await (await fetch('/api/hub/jobs')).json();
+    const job=(jobs||[]).find(j=>String(j.id)===String(id));
+    if(!job)return;
+    window.__HUB_JOB_ID=job.id;
+    if($('#jd'))$('#jd').value=job.jd_text||'';
+    if($('#company')&&job.company)$('#company').value=job.company;
+    if($('#targetTitle')&&job.title)$('#targetTitle').value=job.title;
+    setTab('optimize');
+    const jd=$('#jd'); if(jd){jd.scrollIntoView({behavior:'smooth',block:'center'});}
+  }catch(e){/* hub offline — ignore */}
+})();
 
 ['#st_font','#st_align','#st_bullet','#st_accent','#st_name','#st_heading','#st_sub','#st_body','#st_ls','#st_secspace','#st_entryspace','#st_margin','#st_eduorder','#st_skills','#st_dateformat','#st_bold_h','#st_bold_s','#st_divider','#st_fit'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',onStyleChange);});
 // ---------- onboarding wizard (local first-run setup; no server, no key step) ----------

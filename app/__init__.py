@@ -10,4 +10,4 @@ Package layout:
     app.ats         Per-portal rules + the ATS-safe .docx formatter.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.4.0"

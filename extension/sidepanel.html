@@ -9,16 +9,21 @@
 <body>
 <header class="top">
   <span class="word">RESOPT</span>
-  <span class="engine on"><span class="dot" style="background:#2E7D52"></span>on your machine</span>
+  <span id="engineTag" class="engine off"><span class="dot"></span><span id="engineLabel">checking…</span></span>
 </header>
+
+<nav id="tabbar" class="tabbar hidden">
+  <button id="tabJob" class="tab on">This job</button>
+  <button id="tabHub" class="tab">Hub<span id="hubCount" class="count" style="display:none">0</span></button>
+</nav>
 
 <main>
   <section id="view-loading" class="view"><div class="spin"></div><p class="muted center">Reading this page…</p></section>
 
-  <!-- setup: key (+ get-a-key links) + résumé -->
+  <!-- setup: résumés -->
   <section id="view-setup" class="view hidden">
     <h2>Quick setup</h2>
-    <p class="muted" style="margin-bottom:12px;">Add a résumé to see instant keyword match scores before you save jobs to your Hub.</p>
+    <p class="muted" style="margin-bottom:12px;">Add a résumé to see instant match scores before you save jobs to your Hub.</p>
 
     <label>Saved résumés</label>
     <div id="resumeList"></div>
@@ -34,11 +39,14 @@
     <button id="setupDoneBtn" class="cta" style="margin-top:16px">Done</button>
   </section>
 
-  <!-- State A: job detected + FREE fit read -->
+  <!-- State A: job detected + fit read -->
   <section id="view-job" class="view hidden">
     <p class="lab">Job detected</p>
     <div class="card">
-      <span id="atsChip" class="pill">ATS</span>
+      <div style="display:flex;align-items:flex-start">
+        <span id="atsChip" class="pill">Job</span>
+        <a id="jobLink" class="linkic" style="margin-left:auto" href="#" target="_blank" title="Open the posting" aria-label="Open the posting">↗</a>
+      </div>
       <p id="jobTitle" style="font-size:15px;font-weight:600;margin:9px 0 2px">Job title</p>
       <p id="jobCompany" class="soft" style="font-size:12px;margin:0"></p>
       <p id="jobMeta" class="muted" style="font-size:11px;margin:8px 0 0"></p>
@@ -48,24 +56,16 @@
     <select id="resumeSelect"></select>
 
     <div class="divider"></div>
-    <p class="lab">Worth applying? <span class="soft">— free, no AI</span></p>
-    <div class="meter"><span id="fitPct" class="score">–</span><span class="muted">/100</span>
-      <span id="fitVerdict" class="verdict v-mid" style="margin-left:auto"></span></div>
+    <p class="lab" style="margin-top:14px">Match score <span id="scoreBadge" class="srcbadge est">quick estimate</span></p>
+    <div class="meter" style="display:flex;align-items:baseline;gap:5px">
+      <span id="fitPct" class="score">–</span><span class="muted">/100</span>
+      <span id="fitVerdict" class="verdict" style="margin-left:auto;font-size:12px"></span>
+    </div>
     <div class="bar"><i id="fitBar" style="width:0%"></i></div>
-    
-    <div style="margin: 16px 0 8px;">
-      <p class="lab" style="margin-bottom: 4px;">Target ATS Format</p>
-      <select id="atsOverride" class="sel" style="width: 100%;">
-        <option value="generic">Generic / Unknown</option>
-        <option value="workday">Workday</option>
-        <option value="greenhouse">Greenhouse</option>
-        <option value="lever">Lever</option>
-        <option value="icims">iCIMS</option>
-        <option value="taleo">Taleo</option>
-        <option value="smartrecruiters">SmartRecruiters</option>
-        <option value="ashby">Ashby</option>
-        <option value="bamboohr">BambooHR</option>
-      </select>
+
+    <div style="margin: 4px 0 8px;">
+      <p class="lab" style="margin-bottom: 4px;">Target ATS format <span id="atsCount" class="soft"></span></p>
+      <select id="atsOverride" class="sel" style="width: 100%;"></select>
     </div>
 
     <p class="lab" style="margin-top:10px">Keywords you cover</p>
@@ -75,10 +75,25 @@
 
     <button id="optimizeBtn" class="cta" style="margin-top:16px">Save Job to Hub</button>
     <p style="margin-top:10px;display:flex;justify-content:space-between">
-      <button id="openSetupBtn" class="setuplink">⚙ Key &amp; résumés</button>
+      <button id="openSetupBtn" class="setuplink">⚙ Résumés</button>
       <button id="rescanBtn" class="setuplink">↻ Re-scan page</button>
     </p>
-    <p class="foot">🔒 Runs in your browser · your key, your machine</p>
+    <p class="foot" style="border:none;padding:12px 0 0">🔒 Runs on your machine · your key</p>
+  </section>
+
+  <!-- Hub: saved jobs, links, applied status, on-device résumés -->
+  <section id="view-hub" class="view hidden">
+    <div style="display:flex;align-items:center;margin:2px 0 4px">
+      <p class="lab" style="margin:0">Saved jobs</p>
+      <button id="hubRefresh" class="setuplink" style="margin-left:auto">↻ Refresh</button>
+    </div>
+    <div class="fseg">
+      <button data-filter="all" class="on">All</button>
+      <button data-filter="applied">Applied</button>
+      <button data-filter="saved">Not applied</button>
+    </div>
+    <div id="hubList"></div>
+    <p class="foot" style="border:none;padding:12px 0 0">💻 Your Hub lives on this machine</p>
   </section>
 
   <section id="view-error" class="view hidden">
